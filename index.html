@@ -4,216 +4,279 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Mtn Brook Village Office — Project Finances</title>
+<link rel="stylesheet" href="https://use.typekit.net/wup0iix.css">
 <style>
-@font-face{font-family:'Eames Century Modern';src:url('https://tscarlisle-ghub.github.io/fonts/Eames%20Century%20Modern-Book.woff2')format('woff2');font-weight:400;font-style:normal}
-@font-face{font-family:'Eames Century Modern';src:url('https://tscarlisle-ghub.github.io/fonts/Eames%20Century%20Modern-Book%20Italic.woff2')format('woff2');font-weight:400;font-style:italic}
-@font-face{font-family:'Eames Century Modern';src:url('https://tscarlisle-ghub.github.io/fonts/Eames%20Century%20Modern-Medium.woff2')format('woff2');font-weight:500;font-style:normal}
-@font-face{font-family:'Interstate';src:url('https://tscarlisle-ghub.github.io/fonts/Interstate-Hairline.woff2')format('woff2');font-weight:100;font-style:normal}
-@font-face{font-family:'Interstate';src:url('https://tscarlisle-ghub.github.io/fonts/Interstate-Light.woff2')format('woff2');font-weight:300;font-style:normal}
-@font-face{font-family:'Interstate';src:url('https://tscarlisle-ghub.github.io/fonts/Interstate-Regular.woff2')format('woff2');font-weight:400;font-style:normal}
-@font-face{font-family:'Interstate';src:url('https://tscarlisle-ghub.github.io/fonts/Interstate-Bold.woff2')format('woff2');font-weight:700;font-style:normal}
-@font-face{font-family:'Interstate Condensed';src:url('https://tscarlisle-ghub.github.io/fonts/Interstate-LightCondensed.woff2')format('woff2');font-weight:300;font-style:normal}
-@font-face{font-family:'Interstate Condensed';src:url('https://tscarlisle-ghub.github.io/fonts/Interstate-RegularCondensed.woff2')format('woff2');font-weight:400;font-style:normal}
-@font-face{font-family:'Interstate Condensed';src:url('https://tscarlisle-ghub.github.io/fonts/Interstate-BoldCondensed.woff2')format('woff2');font-weight:700;font-style:normal}
-@font-face{font-family:'Knockout';src:url('https://tscarlisle-ghub.github.io/fonts/Knockout-HTF49-Liteweight.woff2')format('woff2');font-weight:400;font-style:normal}
-@font-face{font-family:'Knockout';src:url('https://tscarlisle-ghub.github.io/fonts/Knockout-HTF68-FullFeatherwt.woff2')format('woff2');font-weight:600;font-style:normal}
-@font-face{font-family:'Knockout';src:url('https://tscarlisle-ghub.github.io/fonts/Knockout-HTF73-FullHeviweight.woff2')format('woff2');font-weight:800;font-style:normal}
-
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --paper:#f8f6f1;--paper-2:#f0ede6;--paper-3:#e8e4db;
-  --ink:#1c1a17;--ink-2:#3d3a34;--ink-3:#7a7670;--ink-4:#b0ada6;
-  --rule:rgba(28,26,23,.12);--rule-md:rgba(28,26,23,.28);--rule-hv:rgba(28,26,23,.58);
-  --red:#7a2515;--red-lt:#f9f0ed;--green:#1a4020;--green-lt:#eef3ec;--amber:#8a5a12;--amber-lt:#faf1e2;
+  --rust:#A2512D;--rust-mid:#B57340;--rust-soft:#E2BFA7;--rust-wash:#F2E2D2;
+  --ink:#2A2520;--ink-soft:#6E5E52;--ink-mute:#8E7E72;
+  --paper:#FBF6EE;--paper-edge:#F1E9DA;--paper-deep:#ECE3D0;--night:#1a1714;
+  --hairline:rgba(162,81,45,.32);--hairline-strong:rgba(162,81,45,.65);--hairline-ink:rgba(42,37,32,.16);
+  --forest:#3F6B4E;--forest-deep:#2C4F39;--forest-wash:#E9F0EA;--gold:#C99A2E;--alert:#8A2A1F;--mint:#BFE0D2;
+  --display:"aviano-sans","Optima",serif;
+  --titling:"columbia-titling","Trajan Pro",serif;
+  --serif:"urw-antiqua","Iowan Old Style",Georgia,serif;
+  --sans-cond:"franklin-gothic-condensed","Franklin Gothic",sans-serif;
+  --sans-comp:"franklin-gothic-compressed","franklin-gothic-condensed",sans-serif;
 }
-html{font-size:15px}
-body{font-family:'Eames Century Modern',Georgia,serif;font-weight:400;background:var(--paper);color:var(--ink);line-height:1.55;padding:40px 40px 96px;max-width:1520px;margin:0 auto}
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--serif);-webkit-font-smoothing:antialiased;text-rendering:geometricPrecision}
+.tab{font-variant-numeric:tabular-nums}
+.wrap{max-width:1440px;margin:0 auto;padding:0 56px 90px}
 
-/* MASTHEAD */
-.mast{border-top:1.5px solid var(--ink);border-bottom:.5px solid var(--rule-md);padding:14px 0 12px;display:grid;grid-template-columns:1fr auto;align-items:end;gap:24px;margin-bottom:24px}
-.mast-title{font-family:'Knockout',sans-serif;font-weight:600;font-size:30px;letter-spacing:.05em;text-transform:uppercase;line-height:1}
-.mast-sub{font-family:'Interstate',sans-serif;font-weight:100;font-size:10.5px;letter-spacing:.15em;text-transform:uppercase;color:var(--ink-3);margin-top:5px}
-.mast-meta{text-align:right;font-family:'Interstate',sans-serif;font-weight:300;font-size:10px;color:var(--ink-3);line-height:2;letter-spacing:.04em}
+/* ═══ MASTHEAD ═══ */
+.mast{max-width:1440px;margin:0 auto;padding:44px 56px 0}
+.mast-row{display:flex;align-items:flex-end;justify-content:space-between;border-bottom:2px solid var(--ink);padding-bottom:24px;gap:24px}
+.mast-logo{width:130px;height:auto;display:block;margin-bottom:20px}
+.mast-kicker{font-family:var(--titling);font-size:10px;letter-spacing:.4em;text-transform:uppercase;color:var(--rust)}
+.mast-title{margin:9px 0 0;font-family:var(--serif);font-style:italic;font-weight:400;font-size:38px;line-height:1.05;letter-spacing:-.01em;color:var(--ink)}
+.mast-meta{text-align:right;font-family:var(--titling);font-size:9px;letter-spacing:.26em;text-transform:uppercase;color:var(--ink-mute);line-height:2}
+.mast-meta .rust{color:var(--rust)}
 
-/* SAVE STRIP */
-.save-strip{display:flex;flex-wrap:wrap;align-items:center;gap:12px;padding:9px 0 18px;font-family:'Interstate',sans-serif;font-weight:300;font-size:10px;letter-spacing:.08em;color:var(--ink-3)}
-.save-strip button,.save-strip .load-lbl{font-family:'Interstate',sans-serif;font-weight:400;font-size:10px;letter-spacing:.1em;text-transform:uppercase;background:transparent;border:.5px solid var(--rule-hv);padding:5px 12px;cursor:pointer;color:var(--ink-2);display:inline-block}
-.save-strip button.primary{border-color:var(--ink);background:var(--ink);color:var(--paper)}
-.save-strip button.primary:hover{background:var(--ink-2)}
-.save-strip button:hover,.save-strip .load-lbl:hover{background:var(--paper-3)}
-.save-strip .status{font-style:italic;white-space:nowrap}
-.save-strip .spacer{flex:1 1 auto}
-.save-strip .hint{font-style:italic;color:var(--ink-4);font-size:9.5px;width:100%}
+/* ═══ SAVE STRIP ═══ */
+.save-strip{display:flex;flex-wrap:wrap;align-items:center;gap:10px;padding:18px 0 22px;border-bottom:1px solid var(--hairline)}
+.btn{font-family:var(--titling);font-size:9px;letter-spacing:.2em;text-transform:uppercase;padding:10px 16px;cursor:pointer;border-radius:0;transition:background 180ms,color 180ms,border-color 180ms;white-space:nowrap}
+.btn-primary{color:var(--rust);background:none;border:1px solid var(--rust)}
+.btn-primary:hover{background:var(--rust);color:var(--paper)}
+.btn-save{color:#fff;background:var(--forest-deep);border:none}
+.btn-save:hover{background:var(--forest)}
+.btn-secondary{color:var(--ink-soft);background:none;border:1px solid var(--hairline-ink)}
+.btn-secondary:hover{border-color:var(--alert);color:var(--alert)}
+label.btn-secondary{display:inline-block}
+.save-status{font-family:var(--serif);font-style:italic;font-size:12.5px;color:var(--ink-soft);white-space:nowrap}
+.save-status a{color:var(--rust)}
+.save-hint{width:100%;font-family:var(--serif);font-style:italic;font-size:12px;color:var(--ink-mute);margin-top:2px}
+.spacer{flex:1 1 auto}
 
-/* DASHBOARD BAND */
-.band{display:grid;grid-template-columns:repeat(6,1fr);border-top:.5px solid var(--rule-hv);border-bottom:.5px solid var(--rule-hv);margin-bottom:32px}
-.bc{padding:12px 0;border-right:.5px solid var(--rule);position:relative}
-.bc:last-child{border-right:none}
-.bc:not(:first-child){padding-left:18px}
-.bc-label{font-family:'Interstate',sans-serif;font-weight:300;font-size:8.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-4);margin-bottom:3px;display:flex;align-items:center;gap:5px}
-.bc-val{font-family:'Interstate Condensed',sans-serif;font-weight:400;font-size:18px;letter-spacing:.01em}
-.bc-sub{font-family:'Interstate',sans-serif;font-weight:300;font-size:9px;color:var(--ink-4);margin-top:2px}
-.bc-val.pos{color:var(--green)}
-.bc-val.neg{color:var(--red)}
-@media (max-width:1100px){.band{grid-template-columns:repeat(3,1fr)}.bc:nth-child(3n+1){padding-left:0}.bc:nth-child(3n){border-right:none}}
-@media (max-width:640px){.band{grid-template-columns:repeat(2,1fr)}}
+/* ═══ KPI RIBBON ═══ */
+.kpi{border-top:1px solid var(--hairline-strong);border-bottom:1px solid var(--hairline);display:grid;grid-template-columns:repeat(6,1fr);margin:28px 0 8px}
+.kpi-cell{padding:20px 20px 18px;border-left:1px solid var(--hairline)}
+.kpi-cell:first-child{border-left:none}
+.kpi-of{font-family:var(--titling);font-size:8.5px;letter-spacing:.3em;text-transform:uppercase;color:var(--ink-mute);display:flex;align-items:center;gap:5px}
+.kpi-of .info{cursor:help;color:var(--ink-mute);font-size:10px}
+.kpi-val{font-family:var(--sans-comp);font-size:26px;line-height:.96;color:var(--ink);margin-top:12px;letter-spacing:.01em}
+.kpi-val.rust{color:var(--rust)}
+.kpi-val.forest{color:var(--forest)}
+.kpi-label{font-family:var(--display);font-weight:700;font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--ink);margin-top:10px}
+.kpi-note{font-family:var(--serif);font-style:italic;font-size:12.5px;color:var(--ink-soft);margin-top:3px}
+@media (max-width:1100px){.kpi{grid-template-columns:repeat(3,1fr)}.kpi-cell:nth-child(3n+1){border-left:none}}
+@media (max-width:640px){.kpi{grid-template-columns:repeat(2,1fr)}.kpi-cell:nth-child(odd){border-left:none}}
 
-/* PANEL (dropbox check) */
-.panel{border-top:.5px solid var(--rule-hv);border-bottom:.5px solid var(--rule-hv);padding:12px 0;margin-bottom:32px;font-family:'Interstate',sans-serif;font-weight:300;font-size:11px;color:var(--ink-2);display:flex;flex-wrap:wrap;align-items:center;gap:14px}
-.panel strong{font-weight:400;color:var(--ink)}
-.panel button{font-family:'Interstate',sans-serif;font-weight:400;font-size:10px;letter-spacing:.1em;text-transform:uppercase;background:transparent;border:.5px solid var(--rule-hv);padding:5px 12px;cursor:pointer;color:var(--ink-2)}
-.panel button:hover{background:var(--paper-3)}
-.panel .txt{flex:1 1 320px}
+/* ═══ PANEL ═══ */
+.panel{border-bottom:1px solid var(--hairline);padding:16px 0;margin-bottom:8px;display:flex;flex-wrap:wrap;align-items:center;gap:16px}
+.panel-txt{flex:1 1 340px;font-family:var(--serif);font-style:italic;font-size:13.5px;color:var(--ink-soft);line-height:1.5}
+.panel-txt strong{font-style:normal;font-family:var(--display);font-weight:700;font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--ink)}
 
-/* FILTER BAR */
-.filters{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:14px;font-family:'Interstate',sans-serif;font-size:11px}
-.filters input[type=text],.filters select{font-family:'Interstate',sans-serif;font-weight:400;font-size:11px;color:var(--ink);background:var(--paper);border:.5px solid var(--rule-hv);padding:6px 9px;letter-spacing:.02em}
-.filters label{font-weight:300;letter-spacing:.1em;text-transform:uppercase;font-size:8.5px;color:var(--ink-4);margin-right:5px}
-.filters .fgrp{display:flex;align-items:center}
-.filters button.clear{font-family:'Interstate',sans-serif;font-weight:400;font-size:10px;letter-spacing:.1em;text-transform:uppercase;background:transparent;border:.5px solid var(--rule-md);padding:6px 12px;cursor:pointer;color:var(--ink-3)}
-.filters button.clear:hover{border-color:var(--red);color:var(--red)}
-.filters .count{margin-left:auto;font-style:italic;color:var(--ink-4);font-size:10.5px}
+/* ═══ NUMBERED PLATE ═══ */
+.plate{display:grid;grid-template-columns:200px 1fr;gap:64px;align-items:start;padding:48px 0 8px}
+.plate-side{position:sticky;top:24px}
+.plate-num{font-family:var(--sans-comp);font-size:66px;color:var(--rust);line-height:.82}
+.plate-kicker{font-family:var(--titling);font-size:9.5px;letter-spacing:.4em;text-transform:uppercase;color:var(--ink-mute);margin-top:10px}
+.plate-rule{width:40px;height:2px;background:var(--rust);margin:14px 0}
+.plate-label{font-family:var(--display);font-weight:700;font-size:14px;letter-spacing:.07em;text-transform:uppercase;color:var(--ink);line-height:1.25}
+.plate-note{font-family:var(--serif);font-style:italic;font-size:13.5px;color:var(--ink-soft);margin-top:16px;line-height:1.5}
+@media (max-width:900px){.plate{grid-template-columns:1fr}.plate-side{position:static;display:flex;align-items:baseline;gap:14px}.plate-num{font-size:40px}.plate-rule{display:none}}
 
-/* TABLE */
-.table-wrap{overflow-x:auto;border-top:1px solid var(--rule-hv);margin-bottom:20px}
-table{width:100%;border-collapse:collapse;font-size:12px;min-width:1360px}
-thead tr{border-bottom:.5px solid var(--rule-hv)}
-thead th{font-family:'Interstate',sans-serif;font-weight:300;font-size:8px;letter-spacing:.13em;text-transform:uppercase;color:var(--ink-4);padding:8px 6px;text-align:left;white-space:nowrap;cursor:pointer;user-select:none}
-thead th:hover{color:var(--ink-2)}
+/* ═══ FILTERS ═══ */
+.filters{display:flex;flex-wrap:wrap;align-items:center;gap:14px;margin-bottom:16px}
+.fgrp{display:flex;align-items:center;gap:6px}
+.fgrp label{font-family:var(--titling);font-size:8.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-mute)}
+.fgrp input[type=text],.fgrp select{font-family:var(--serif);font-size:13px;color:var(--ink);background:#fff;border:1px solid var(--hairline-ink);padding:7px 10px;border-radius:0;outline:none}
+.fgrp input[type=text]:focus,.fgrp select:focus{border-color:var(--rust)}
+.filters .count{margin-left:auto;font-family:var(--serif);font-style:italic;font-size:12.5px;color:var(--ink-mute)}
+
+/* ═══ TABLE / LEDGER ═══ */
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;min-width:1420px}
+thead tr{border-bottom:1px solid var(--ink)}
+thead th{font-family:var(--titling);font-weight:400;font-size:8.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-mute);padding:0 7px 9px;text-align:left;white-space:nowrap;cursor:pointer;user-select:none}
+thead th:hover{color:var(--ink)}
 thead th.num{text-align:right}
-thead th .arrow{font-size:8px;margin-left:2px}
-tbody tr{border-bottom:.5px solid var(--rule)}
-tbody tr:hover{background:var(--paper-2)}
-tbody tr.overdue{background:var(--red-lt)}
-td{padding:6px;vertical-align:middle}
+thead th .arrow{color:var(--rust);margin-left:2px}
+tbody tr{border-bottom:1px solid var(--hairline)}
+tbody tr:hover{background:var(--rust-wash)}
+tbody tr.overdue{background:var(--forest-wash)}
+tbody tr.overdue:hover{background:var(--rust-wash)}
+td{padding:9px 7px;vertical-align:middle}
 td.num{text-align:right}
 
-.cell-input,.cell-select,.cell-date,.cell-num{font-family:'Interstate Condensed',sans-serif;font-weight:400;font-size:12px;color:var(--ink);background:transparent;border:none;border-bottom:.5px solid transparent;padding:3px 2px;width:100%;outline:none;transition:border-color .15s,background .12s}
-.cell-input{font-family:'Eames Century Modern',Georgia,serif;font-size:12px}
-.cell-input:hover,.cell-select:hover,.cell-date:hover,.cell-num:hover{border-bottom-color:var(--rule-md)}
-.cell-input:focus,.cell-select:focus,.cell-date:focus,.cell-num:focus{background:var(--paper-3);border-bottom-color:var(--ink)}
-.cell-num{text-align:right;color:var(--red);font-weight:500}
-textarea.cell-input{resize:vertical;min-height:30px;line-height:1.4}
-select.cell-select{-webkit-appearance:none;appearance:none;background-image:none;cursor:pointer}
+.f-in{font-family:var(--serif);font-size:13px;color:var(--ink);background:#fff;border:1px solid var(--hairline-ink);padding:6px 8px;width:100%;border-radius:0;outline:none;transition:border-color 160ms}
+.f-in:hover{border-color:var(--ink-mute)}
+.f-in:focus{border-color:var(--rust)}
+.f-num{font-family:var(--sans-cond);font-size:14px;color:var(--ink);text-align:right;font-variant-numeric:tabular-nums}
+textarea.f-in{resize:vertical;min-height:32px;line-height:1.4;font-style:italic}
+select.f-in{appearance:none;background-image:none;cursor:pointer}
 
-.vendor-cell{min-width:130px}
-.desc-cell{min-width:200px}
-.amt-cell{min-width:100px;position:relative}
-.amt-badge{font-size:9px;color:var(--ink-4);cursor:help;border-bottom:1px dotted var(--ink-4);margin-left:3px}
-.fx-row{display:flex;gap:3px;align-items:center;margin-top:2px}
-.fx-row select,.fx-row input{font-family:'Interstate',sans-serif;font-size:9px;padding:2px 3px;border:.5px solid var(--rule-md);background:var(--paper)}
-.fx-row input{width:56px}
-.fx-btn{font-size:8.5px;letter-spacing:.05em;text-transform:uppercase;background:var(--ink);color:var(--paper);border:none;padding:2px 5px;cursor:pointer}
-.fx-toggle{font-family:'Interstate',sans-serif;font-size:8.5px;color:var(--ink-4);cursor:pointer;text-decoration:underline;text-underline-offset:2px;margin-top:1px;display:inline-block}
+.vendor-cell{min-width:150px}
+.desc-cell{min-width:210px}
+.amt-cell{min-width:112px;position:relative}
+.amt-badge{font-family:var(--titling);font-size:8.5px;letter-spacing:.08em;color:var(--rust-mid);cursor:help;border-bottom:1px dotted var(--rust-mid);margin-left:3px}
+.fx-row{display:flex;gap:3px;align-items:center;margin-top:3px}
+.fx-row select,.fx-row input{font-family:var(--sans-cond);font-size:10px;padding:3px 4px;border:1px solid var(--hairline-ink);background:#fff}
+.fx-row input{width:58px}
+.fx-btn{font-family:var(--titling);font-size:8px;letter-spacing:.1em;text-transform:uppercase;background:var(--ink);color:var(--paper);border:none;padding:3px 6px;cursor:pointer}
+.fx-toggle{font-family:var(--titling);font-size:8px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-mute);cursor:pointer;border-bottom:1px dotted var(--ink-mute);margin-top:2px;display:inline-block}
+.fx-toggle:hover{color:var(--rust)}
 
-.var-val{font-family:'Interstate Condensed',sans-serif;font-weight:500;font-size:12px}
-.var-val.over{color:var(--red)}
-.var-val.under{color:var(--green)}
-.var-pct{font-family:'Interstate',sans-serif;font-size:9px;color:var(--ink-4);display:block}
+.var-val{font-family:var(--sans-comp);font-weight:400;font-size:15px}
+.var-val.over{color:var(--rust)}
+.var-val.under{color:var(--forest)}
+.var-pct{font-family:var(--titling);font-size:8px;letter-spacing:.1em;color:var(--ink-mute);display:block;margin-top:2px}
 
-.status-pill{font-family:'Interstate',sans-serif;font-weight:400;font-size:9.5px;letter-spacing:.06em;text-transform:uppercase;padding:3px 4px;border:.5px solid transparent;background:transparent;cursor:pointer;width:100%}
-.status-pill.pending{color:var(--amber);border-color:var(--amber);background:var(--amber-lt)}
-.status-pill.paid{color:var(--green);border-color:var(--green);background:var(--green-lt)}
-.status-pill.disputed{color:var(--red);border-color:var(--red);background:var(--red-lt)}
+.status-pill{font-family:var(--titling);font-weight:400;font-size:8.5px;letter-spacing:.06em;text-transform:uppercase;padding:5px 2px;border:1px solid transparent;background:#fff;cursor:pointer;width:100%;min-width:78px;text-align:center;border-radius:0;appearance:none;outline:none}
+.status-pill.pending{color:var(--gold);border-color:var(--gold)}
+.status-pill.paid{color:var(--forest);border-color:var(--forest)}
+.status-pill.disputed{color:var(--alert);border-color:var(--alert)}
 
-.att-cell{min-width:100px;font-family:'Interstate',sans-serif;font-size:10px}
-.att-link{color:var(--ink-2);text-decoration:underline;text-underline-offset:2px;cursor:pointer}
-.att-name{display:block;max-width:110px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--ink-3);font-style:italic}
-.att-remove{color:var(--red);cursor:pointer;font-size:9px;margin-left:4px}
-.upload-lbl{font-family:'Interstate',sans-serif;font-weight:400;font-size:9.5px;letter-spacing:.06em;text-transform:uppercase;border:.5px dashed var(--rule-md);padding:4px 8px;cursor:pointer;color:var(--ink-3);display:inline-block}
-.upload-lbl:hover{border-color:var(--ink-3);color:var(--ink)}
+.att-cell{min-width:106px;font-family:var(--serif);font-size:12px}
+.att-link{color:var(--rust);text-decoration:none;border-bottom:1px solid var(--rust);cursor:pointer;font-style:normal;font-family:var(--titling);font-size:9px;letter-spacing:.1em;text-transform:uppercase}
+.att-name{display:block;max-width:112px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--ink-mute);font-style:italic;font-size:11.5px;margin-top:2px}
+.att-remove{color:var(--alert);cursor:pointer;font-size:9px;margin-left:5px;font-family:var(--titling);letter-spacing:.08em;text-transform:uppercase}
+.upload-lbl{font-family:var(--titling);font-weight:400;font-size:8.5px;letter-spacing:.1em;text-transform:uppercase;border:1px dashed var(--hairline-ink);padding:6px 9px;cursor:pointer;color:var(--ink-mute);display:inline-block}
+.upload-lbl:hover{border-color:var(--rust);color:var(--rust)}
 
-.del-btn{font-family:'Interstate',sans-serif;font-size:13px;color:var(--ink-4);background:none;border:none;cursor:pointer;padding:2px 6px}
-.del-btn:hover{color:var(--red)}
+.del-btn{font-family:var(--serif);font-size:16px;color:var(--ink-mute);background:none;border:none;cursor:pointer;padding:2px 6px;line-height:1}
+.del-btn:hover{color:var(--alert)}
 
-.add-row{margin:10px 0 40px}
-.add-row button{font-family:'Interstate',sans-serif;font-weight:400;font-size:11px;letter-spacing:.1em;text-transform:uppercase;background:transparent;border:1px solid var(--ink);padding:8px 18px;cursor:pointer;color:var(--ink)}
-.add-row button:hover{background:var(--ink);color:var(--paper)}
+.add-row{margin:16px 0 44px}
 
-.empty-state{padding:40px 0;text-align:center;font-style:italic;color:var(--ink-4);font-size:13px}
+.empty-state{padding:56px 0;text-align:center;display:flex;flex-direction:column;align-items:center;gap:14px}
+.empty-state img{width:38px;height:auto;opacity:.55}
+.empty-state span{font-family:var(--serif);font-style:italic;font-size:15px;color:var(--ink-soft);max-width:420px}
 
-.fn{margin-top:36px;padding-top:12px;border-top:.5px solid var(--rule);font-family:'Interstate',sans-serif;font-weight:300;font-size:9px;color:var(--ink-4);letter-spacing:.05em;line-height:2.1}
-
-/* Dropbox check results */
-.dbx-report{margin-top:10px;font-family:'Interstate',sans-serif;font-size:11px;line-height:1.8;width:100%}
-.dbx-report ul{list-style:none;margin-top:4px}
-.dbx-report li{padding:2px 0;border-bottom:.5px solid var(--rule)}
+/* ═══ FOLIO ═══ */
+.folio{display:flex;justify-content:space-between;align-items:baseline;font-family:var(--titling);font-size:9.5px;letter-spacing:.32em;text-transform:uppercase;color:var(--ink-mute);padding:28px 0 0;border-top:1px solid var(--hairline);margin-top:44px}
+.folio .rust{color:var(--rust)}
+.fn{margin-top:26px;font-family:var(--serif);font-style:italic;font-size:12px;color:var(--ink-mute);line-height:1.9}
 </style>
 </head>
 <body>
 
 <div class="mast">
-  <div>
-    <div class="mast-title">Mtn Brook Village Office — Project Finances</div>
-    <div class="mast-sub">2401½ Canterbury Road &middot; Mountain Brook, Alabama &middot; Master Ledger</div>
+  <div class="mast-row">
+    <div>
+      <img class="mast-logo" src="assets/logo-wordmark.png" alt="Carlisle Moore Architects">
+      <div class="mast-kicker">The Master Ledger</div>
+      <h1 class="mast-title">Mtn Brook Village Office — Project Finances</h1>
+    </div>
+    <div class="mast-meta">
+      <div>2401½ Canterbury Road</div>
+      <div>Mountain Brook, Alabama</div>
+      <div class="rust" id="today-meta"></div>
+    </div>
   </div>
-  <div class="mast-meta">Carlisle Moore Architects<br><span id="today-meta"></span><br>TCC &middot; GHT &middot; Emory Ratliff</div>
 </div>
 
-<div class="save-strip">
-  <button class="primary" onclick="exportLedger()">Save (export ledger-data.json)</button>
-  <label class="load-lbl" title="Load a previously exported ledger-data.json">Load ledger-data.json<input type="file" accept=".json" style="display:none" onchange="importLedgerFile(this)"></label>
-  <button onclick="clearAll()">Clear all</button>
-  <span class="status" id="save-status"></span>
-  <span class="spacer"></span>
-  <span class="hint">Autosaves to this browser as you work &middot; use Save to export a file to commit to your GitHub repo &middot; when hosted on GitHub Pages the app auto-loads ledger-data.json on first visit from a new browser</span>
-</div>
+<div class="wrap">
 
-<div class="band">
-  <div class="bc"><div class="bc-label">Total Estimated</div><div class="bc-val" id="d-est">$0.00</div></div>
-  <div class="bc"><div class="bc-label">Total Invoiced (Actual)</div><div class="bc-val" id="d-inv">$0.00</div></div>
-  <div class="bc"><div class="bc-label">Total Paid</div><div class="bc-val" id="d-paid">$0.00</div></div>
-  <div class="bc"><div class="bc-label">Remaining (Owed)<span title="Total Invoiced minus Total Paid" style="cursor:help">ⓘ</span></div><div class="bc-val" id="d-owed">$0.00</div></div>
-  <div class="bc"><div class="bc-label">Variance<span title="Actual (Invoiced) minus Estimated — red is over budget, green is under" style="cursor:help">ⓘ</span></div><div class="bc-val" id="d-var">$0.00</div></div>
-  <div class="bc"><div class="bc-label">Due Next 30 Days</div><div class="bc-val" id="d-due30">$0.00</div><div class="bc-sub" id="d-due30-count">0 payments</div></div>
-</div>
+  <div class="save-strip">
+    <button class="btn btn-save" onclick="exportLedger()">Save — Export ledger-data.json</button>
+    <label class="btn btn-secondary">Load ledger-data.json<input type="file" accept=".json" style="display:none" onchange="importLedgerFile(this)"></label>
+    <button class="btn btn-secondary" onclick="clearAll()">Clear All</button>
+    <span class="spacer"></span>
+    <span class="save-status" id="save-status"></span>
+    <div class="save-hint">Autosaves to this browser as you work &middot; use Save to export a file to commit to your GitHub repo &middot; when hosted on GitHub Pages the app auto-loads ledger-data.json on first visit</div>
+  </div>
 
-<div class="panel">
-  <span class="txt"><strong>Dropbox completeness check</strong> — I can't compare live from inside this page since it's a static file, but ask me any time ("check Dropbox against my ledger") and I'll list your Cost Tracking folder and flag anything not logged yet.</span>
-  <button onclick="copyManifest()">Copy ledger manifest for the check</button>
-</div>
+  <div class="kpi">
+    <div class="kpi-cell">
+      <div class="kpi-of">Total Estimated</div>
+      <div class="kpi-val tab" id="d-est">$0</div>
+      <div class="kpi-label">Estimated</div>
+      <div class="kpi-note">across all entries</div>
+    </div>
+    <div class="kpi-cell">
+      <div class="kpi-of">Total Invoiced</div>
+      <div class="kpi-val tab" id="d-inv">$0</div>
+      <div class="kpi-label">Actual</div>
+      <div class="kpi-note">billed to date</div>
+    </div>
+    <div class="kpi-cell">
+      <div class="kpi-of">Total Paid</div>
+      <div class="kpi-val tab forest" id="d-paid">$0</div>
+      <div class="kpi-label">Collected</div>
+      <div class="kpi-note">disbursed to date</div>
+    </div>
+    <div class="kpi-cell">
+      <div class="kpi-of">Remaining <span class="info" title="Total Invoiced minus Total Paid">ⓘ</span></div>
+      <div class="kpi-val tab rust" id="d-owed">$0</div>
+      <div class="kpi-label">Owed</div>
+      <div class="kpi-note">invoiced, unpaid</div>
+    </div>
+    <div class="kpi-cell">
+      <div class="kpi-of">Variance <span class="info" title="Actual (Invoiced) minus Estimated">ⓘ</span></div>
+      <div class="kpi-val tab" id="d-var">$0</div>
+      <div class="kpi-label">Actual vs. Estimate</div>
+      <div class="kpi-note">rust over &middot; forest under</div>
+    </div>
+    <div class="kpi-cell">
+      <div class="kpi-of">Due Next 30 Days</div>
+      <div class="kpi-val tab rust" id="d-due30">$0</div>
+      <div class="kpi-label" id="d-due30-count">0 Payments</div>
+      <div class="kpi-note">not yet paid</div>
+    </div>
+  </div>
 
-<div class="filters">
-  <div class="fgrp"><label>Vendor</label><input type="text" id="f-vendor" placeholder="Search vendor…" oninput="renderTable()"></div>
-  <div class="fgrp"><label>Category</label><select id="f-category" onchange="renderTable()"><option value="">All</option></select></div>
-  <div class="fgrp"><label>Status</label><select id="f-status" onchange="renderTable()"><option value="">All</option></select></div>
-  <button class="clear" onclick="clearFilters()">Clear filters</button>
-  <span class="count" id="f-count"></span>
-</div>
+  <div class="panel">
+    <span class="panel-txt"><strong>Dropbox completeness check</strong> — this page can't reach Dropbox live (it's a static file, no server). Ask Claude any time, &ldquo;check Dropbox against my ledger,&rdquo; and it will list the Cost Tracking folder and flag anything not logged yet.</span>
+    <button class="btn btn-secondary" onclick="copyManifest()">Copy Ledger Manifest</button>
+  </div>
 
-<div class="table-wrap">
-<table>
-<thead>
-<tr>
-  <th data-sort="vendor">Vendor <span class="arrow"></span></th>
-  <th data-sort="category">Category <span class="arrow"></span></th>
-  <th>Description</th>
-  <th class="num" data-sort="est">Estimated <span class="arrow"></span></th>
-  <th class="num" data-sort="inv">Actual (Invoiced) <span class="arrow"></span></th>
-  <th class="num">Variance</th>
-  <th class="num" data-sort="paid">Paid <span class="arrow"></span></th>
-  <th data-sort="status">Status <span class="arrow"></span></th>
-  <th data-sort="dueDate">Due <span class="arrow"></span></th>
-  <th>Attachment</th>
-  <th data-sort="dateAdded">Added <span class="arrow"></span></th>
-  <th></th>
-</tr>
-</thead>
-<tbody id="ledger-body"></tbody>
-</table>
-</div>
+  <div class="plate">
+    <div class="plate-side">
+      <div class="plate-num">01</div>
+      <div class="plate-kicker">Accounts</div>
+      <div class="plate-rule"></div>
+      <div class="plate-label">The<br>Ledger</div>
+      <div class="plate-note" id="plate-note">Every contract, invoice, estimate, receipt, and GHT item, in one place.</div>
+    </div>
+    <div>
+      <div class="filters">
+        <div class="fgrp"><label>Vendor</label><input type="text" id="f-vendor" placeholder="Search…" oninput="renderTable()"></div>
+        <div class="fgrp"><label>Category</label><select id="f-category" onchange="renderTable()"><option value="">All</option></select></div>
+        <div class="fgrp"><label>Status</label><select id="f-status" onchange="renderTable()"><option value="">All</option></select></div>
+        <button class="btn btn-secondary" onclick="clearFilters()">Clear Filters</button>
+        <span class="count" id="f-count"></span>
+      </div>
 
-<div class="add-row"><button onclick="addEntry()">+ Add Entry</button></div>
+      <div class="table-wrap">
+      <table>
+      <thead>
+      <tr>
+        <th data-sort="vendor">Vendor <span class="arrow"></span></th>
+        <th data-sort="category">Category <span class="arrow"></span></th>
+        <th>Description</th>
+        <th class="num" data-sort="est">Estimated <span class="arrow"></span></th>
+        <th class="num" data-sort="inv">Actual (Invoiced) <span class="arrow"></span></th>
+        <th class="num">Variance</th>
+        <th class="num" data-sort="paid">Paid <span class="arrow"></span></th>
+        <th data-sort="status">Status <span class="arrow"></span></th>
+        <th data-sort="dueDate">Due <span class="arrow"></span></th>
+        <th>Attachment</th>
+        <th data-sort="dateAdded">Added <span class="arrow"></span></th>
+        <th></th>
+      </tr>
+      </thead>
+      <tbody id="ledger-body"></tbody>
+      </table>
+      </div>
 
-<div class="fn" id="dbx-report-wrap" style="display:none">
-  <div class="dbx-report" id="dbx-report"></div>
-</div>
+      <div class="add-row"><button class="btn btn-primary" onclick="addEntry()">+ Add Entry</button></div>
+    </div>
+  </div>
 
-<div class="fn">
-  Categories: Contract &middot; Invoice &middot; Cost Estimate &middot; Receipt &middot; GHT &middot; Other &mdash; Statuses: Pending &middot; Paid &middot; Disputed<br>
-  Variance = Actual (Invoiced) minus Estimated &middot; Remaining (Owed) = Total Invoiced minus Total Paid<br>
-  Foreign-currency amounts are converted to USD at the live rate when entered (via frankfurter.app) and stored alongside the original amount for reference<br>
-  Data autosaves to this browser's local database (IndexedDB) &middot; export/commit ledger-data.json alongside index.html so a new browser or device loads the same starting data from your repo
+  <div class="fn">
+    Categories: Contract &middot; Invoice &middot; Cost Estimate &middot; Receipt &middot; GHT &middot; Other &mdash; Statuses: Pending &middot; Paid &middot; Disputed<br>
+    Variance = Actual (Invoiced) minus Estimated &middot; Remaining (Owed) = Total Invoiced minus Total Paid<br>
+    Foreign-currency amounts convert to USD at the live rate when entered (via frankfurter.app) and keep the original amount as a tooltip<br>
+    Attachments accept PDF, JPG, or PNG &middot; data autosaves to this browser's local database (IndexedDB) &middot; export/commit ledger-data.json alongside index.html so a new browser or device loads the same starting data from your repo
+  </div>
+
+  <div class="folio">
+    <span>The Master Ledger &middot; Mtn Brook Village Office</span>
+    <span class="rust">Carlisle Moore Architects<span style="color:var(--ink-mute);margin-left:10px">2401½ Canterbury Road</span></span>
+  </div>
+
 </div>
 
 <script>
@@ -222,6 +285,7 @@ const CATEGORIES = ['Contract','Invoice','Cost Estimate','Receipt','GHT','Other'
 const STATUSES = ['Pending','Paid','Disputed'];
 const CURRENCIES = ['USD','EUR','GBP','CAD','MXN','JPY','CNY','AUD','CHF','Other'];
 const DB_NAME='cma_finance_db', DB_VERSION=1, STORE='ledger';
+const ATTACH_ACCEPT = 'application/pdf,image/jpeg,image/jpg,image/png';
 
 /* ============================= STATE ============================= */
 let state = { entries: [] };
@@ -361,7 +425,7 @@ async function autoLoadFromRepo(){
       setStatus('Loaded '+entries.length+' entries from ledger-data.json (repo backup)', 8000);
     } else {
       const el = document.getElementById('save-status');
-      el.innerHTML = 'Repo backup available (' + entries.length + ' entries) — <a href="#" onclick="loadRepoBackup(event)" style="color:var(--red)">load it</a>';
+      el.innerHTML = 'Repo backup available (' + entries.length + ' entries) — <a href="#" onclick="loadRepoBackup(event)">load it</a>';
     }
   }catch(_){}
 }
@@ -413,8 +477,9 @@ function viewAttachment(id){
 function uploadAttachment(id, input){
   const file = input.files[0];
   if(!file) return;
-  if(file.type !== 'application/pdf'){
-    if(!confirm('This file is not a PDF ('+(file.type||'unknown type')+'). Attach it anyway?')){ input.value=''; return; }
+  const okTypes = ['application/pdf','image/jpeg','image/jpg','image/png'];
+  if(!okTypes.includes(file.type)){
+    if(!confirm('This file is not a PDF/JPG/PNG ('+(file.type||'unknown type')+'). Attach it anyway?')){ input.value=''; return; }
   }
   const reader = new FileReader();
   reader.onload = e=>{
@@ -547,9 +612,9 @@ function amountCell(e, field, label){
   const fxRowId = e.id+'-'+field+'-fx';
   return `
     <td class="num amt-cell">
-      <input class="cell-num" type="number" step="0.01" value="${f.usd?f.usd.toFixed(2):''}" placeholder="0.00"
+      <input class="f-in f-num" type="number" step="0.01" value="${f.usd?f.usd.toFixed(2):''}" placeholder="0.00"
         onchange="updateAmountUSD('${e.id}','${field}',this.value)">${fxBadge(f,label)}
-      <span class="fx-toggle" onclick="document.getElementById('${fxRowId}').style.display=document.getElementById('${fxRowId}').style.display==='flex'?'none':'flex'">convert&nbsp;currency</span>
+      <span class="fx-toggle" onclick="document.getElementById('${fxRowId}').style.display=document.getElementById('${fxRowId}').style.display==='flex'?'none':'flex'">convert currency</span>
       <div class="fx-row" id="${fxRowId}" style="display:none">
         <select id="${fxRowId}-cur">${optionList(CURRENCIES.filter(c=>c!=='USD'), f.orig?f.orig.currency:'EUR')}</select>
         <input type="number" step="0.01" id="${fxRowId}-amt" placeholder="amount" value="${f.orig?f.orig.amount:''}">
@@ -559,12 +624,12 @@ function amountCell(e, field, label){
 }
 function varianceCell(e){
   const v = varianceOf(e);
-  if(v===null) return `<td class="num"><span class="var-val" style="color:var(--ink-4)">—</span></td>`;
+  if(v===null) return `<td class="num"><span class="var-val" style="color:var(--ink-mute)">—</span></td>`;
   const est = amt(e.est);
   const pct = est ? (v/est*100) : null;
   const cls = v>0.005 ? 'over' : (v<-0.005 ? 'under' : '');
   return `<td class="num">
-    <span class="var-val ${cls}">${v>=0?'+':'−'}${fmtUSD(Math.abs(v))}</span>
+    <span class="var-val tab ${cls}">${v>=0?'+':'−'}${fmtUSD(Math.abs(v))}</span>
     ${pct!==null?`<span class="var-pct">${v>=0?'+':'−'}${Math.abs(pct).toFixed(1)}%</span>`:''}
   </td>`;
 }
@@ -577,23 +642,23 @@ function attachmentCell(e){
     </td>`;
   }
   return `<td class="att-cell">
-    <label class="upload-lbl">Upload<input type="file" accept="application/pdf" style="display:none" onchange="uploadAttachment('${e.id}',this)"></label>
+    <label class="upload-lbl">+ PDF / JPG<input type="file" accept="${ATTACH_ACCEPT}" style="display:none" onchange="uploadAttachment('${e.id}',this)"></label>
   </td>`;
 }
 function rowHTML(e){
   const overdue = isOverdue(e);
   return `<tr data-id="${e.id}" class="${overdue?'overdue':''}">
-    <td class="vendor-cell"><input class="cell-input vendor-input" type="text" value="${(e.vendor||'').replace(/"/g,'&quot;')}" placeholder="Vendor / source" onchange="updateField('${e.id}','vendor',this.value)"></td>
-    <td><select class="cell-select" onchange="updateField('${e.id}','category',this.value)">${optionList(CATEGORIES, e.category)}</select></td>
-    <td class="desc-cell"><textarea class="cell-input" rows="1" placeholder="Description / notes" onchange="updateField('${e.id}','description',this.value)">${(e.description||'')}</textarea></td>
+    <td class="vendor-cell"><input class="f-in vendor-input" type="text" value="${(e.vendor||'').replace(/"/g,'&quot;')}" placeholder="Vendor / source" onchange="updateField('${e.id}','vendor',this.value)"></td>
+    <td><select class="f-in" onchange="updateField('${e.id}','category',this.value)">${optionList(CATEGORIES, e.category)}</select></td>
+    <td class="desc-cell"><textarea class="f-in" rows="1" placeholder="Description / notes" onchange="updateField('${e.id}','description',this.value)">${(e.description||'')}</textarea></td>
     ${amountCell(e,'est','Estimated')}
     ${amountCell(e,'inv','Actual')}
     ${varianceCell(e)}
     ${amountCell(e,'paid','Paid')}
     <td><select class="status-pill ${e.status.toLowerCase()}" onchange="updateField('${e.id}','status',this.value)">${optionList(STATUSES, e.status)}</select></td>
-    <td><input class="cell-date" type="date" value="${e.dueDate||''}" onchange="updateField('${e.id}','dueDate',this.value)"></td>
+    <td><input class="f-in" style="font-family:var(--sans-cond)" type="date" value="${e.dueDate||''}" onchange="updateField('${e.id}','dueDate',this.value)"></td>
     ${attachmentCell(e)}
-    <td><input class="cell-date" type="date" value="${e.dateAdded||''}" onchange="updateField('${e.id}','dateAdded',this.value)"></td>
+    <td><input class="f-in" style="font-family:var(--sans-cond)" type="date" value="${e.dateAdded||''}" onchange="updateField('${e.id}','dateAdded',this.value)"></td>
     <td><button class="del-btn" title="Delete entry" onclick="deleteEntry('${e.id}')">&times;</button></td>
   </tr>`;
 }
@@ -628,12 +693,15 @@ function renderTable(){
     arrow.textContent = th.dataset.sort===sortField ? (sortDir==='asc'?'↑':'↓') : '';
   });
   if(!rows.length){
-    body.innerHTML = `<tr><td colspan="12"><div class="empty-state">${state.entries.length?'No entries match these filters.':'No entries yet — add your first one below.'}</div></td></tr>`;
+    body.innerHTML = `<tr><td colspan="12"><div class="empty-state"><img src="assets/house-mark.png" alt=""><span>${state.entries.length?'No entries match these filters.':'No entries yet — add your first one below.'}</span></div></td></tr>`;
   } else {
     body.innerHTML = rows.map(rowHTML).join('');
   }
   restoreFocus(focusInfo);
   document.getElementById('f-count').textContent = rows.length + ' of ' + state.entries.length + ' entries';
+  document.getElementById('plate-note').textContent = state.entries.length
+    ? state.entries.length + (state.entries.length===1?' entry':' entries') + ' logged across contracts, invoices, estimates, receipts, and GHT items.'
+    : 'Every contract, invoice, estimate, receipt, and GHT item, in one place.';
   renderDashboard();
 }
 function renderDashboard(){
@@ -656,9 +724,9 @@ function renderDashboard(){
   document.getElementById('d-owed').textContent = fmtUSD(owed);
   const varEl = document.getElementById('d-var');
   varEl.textContent = (variance>=0?'+':'−') + fmtUSD(Math.abs(variance));
-  varEl.className = 'bc-val ' + (variance>0.005?'neg':variance<-0.005?'pos':'');
+  varEl.className = 'kpi-val tab ' + (variance>0.005?'rust':variance<-0.005?'forest':'');
   document.getElementById('d-due30').textContent = fmtUSD(due30);
-  document.getElementById('d-due30-count').textContent = due30n + (due30n===1?' payment':' payments');
+  document.getElementById('d-due30-count').textContent = due30n + (due30n===1?' Payment':' Payments');
 }
 function renderAll(){ renderTable(); }
 

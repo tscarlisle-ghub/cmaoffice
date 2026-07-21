@@ -1,11 +1,16 @@
 # Mtn Brook Village Office — Project Finances
 
-A single-page finance tracker for the Mtn Brook Village office build. No backend required — it's a static site meant to be hosted on GitHub Pages, matching the same pattern as `CMA_Office_Budget.html`.
+A single-page finance tracker for the Mtn Brook Village office build. No backend required — it's a static site meant to be hosted on GitHub Pages. Built in the Carlisle Moore **Editorial** house style (rust/paper/forest palette, Columbia Titling / Aviano Sans / URW Antiqua / Franklin Gothic).
 
 ## Files
 
 - `index.html` — the app (open it directly, or host it)
 - `ledger-data.json` — the committed backup of your ledger data. The app writes this file when you click **Save**; you then commit it to git so any other browser/device you open the app in can load the same starting data.
+- `assets/logo-wordmark.png`, `assets/house-mark.png` — brand assets used in the masthead and empty state. Keep them alongside `index.html`.
+
+## Fonts
+
+The app loads Typekit at `https://use.typekit.net/wup0iix.css` (the same kit referenced in the Editorial System handoff). Adobe Fonts kits are domain-restricted — if the type doesn't render once this is live on GitHub Pages, add your `*.github.io` domain (and any custom domain) to that kit's allowed domains in the Adobe Fonts dashboard. Everything degrades gracefully to system serif/sans fallbacks in the meantime, so the app is fully usable either way.
 
 ## How data storage works
 
@@ -14,7 +19,7 @@ A single-page finance tracker for the Mtn Brook Village office build. No backend
 - **Load button** — manually load a `ledger-data.json` file, replacing what's in this browser.
 - **Auto-load from repo** — when the app is hosted over `https://` (e.g. GitHub Pages) and a browser's local database is empty, it automatically fetches `ledger-data.json` from the same folder and loads it. If the browser already has entries and a newer repo file exists, you'll see a small "load it" link in the status strip instead of a silent overwrite.
 
-Because PDFs are stored inline as base64 inside the entries, `ledger-data.json` can get large if you attach many big files — GitHub is fine with this up to typical repo sizes, but keep an eye on it if you're attaching dozens of large scans.
+Attachments accept PDF, JPG, or PNG (handy for phone photos of receipts). Because they're stored inline as base64 inside the entries, `ledger-data.json` can get large if you attach many big files — GitHub is fine with this up to typical repo sizes, but keep an eye on it if you're attaching dozens of large scans.
 
 ## Publishing on GitHub
 
