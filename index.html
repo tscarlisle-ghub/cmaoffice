@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mtn Brook Village Office — Project Finances</title>
+<style>
+@font-face{font-family:'Eames Century Modern';src:url('https://tscarlisle-ghub.github.io/fonts/Eames%20Century%20Modern-Book.woff2')format('woff2');font-weight:400;font-style:normal}
+@font-face{font-family:'Eames Century Modern';src:url('https://tscarlisle-ghub.github.io/fonts/Eames%20Century%20Modern-Book%20Italic.woff2')format('woff2');font-weight:400;font-style:italic}
+@font-face{font-family:'Eames Century Modern';src:url('https://tscarlisle-ghub.github.io/fonts/Eames%20Century%20Modern-Medium.woff2')format('woff2');font-weight:500;font-style:normal}
+@font-face{font-family:'Interstate';src:url('https://tscarlisle-ghub.github.io/fonts/Interstate-Hairline.woff2')format('woff2');font-weight:100;font-style:normal}
+@font-face{font-family:'Interstate';src:url('https://tscarlisle-ghub.github.io/fonts/Interstate-Light.woff2')format('woff2');font-weight:300;font-style:normal}
+@font-face{font-family:'Interstate';src:url('https://tscarlisle-ghub.github.io/fonts/Interstate-Regular.woff2')format('woff2');font-weight:400;font-style:normal}
+@font-face{font-family:'Interstate';src:url('https://tscarlisle-ghub.github.io/fonts/Interstate-Bold.woff2')format('woff2');font-weight:700;font-style:normal}
+@font-face{font-family:'Interstate Condensed';src:url('https://tscarlisle-ghub.github.io/fonts/Interstate-LightCondensed.woff2')format('woff2');font-weight:300;font-style:normal}
+@font-face{font-family:'Interstate Condensed';src:url('https://tscarlisle-ghub.github.io/fonts/Interstate-RegularCondensed.woff2')format('woff2');font-weight:400;font-style:normal}
+@font-face{font-family:'Interstate Condensed';src:url('https://tscarlisle-ghub.github.io/fonts/Interstate-BoldCondensed.woff2')format('woff2');font-weight:700;font-style:normal}
+@font-face{font-family:'Knockout';src:url('https://tscarlisle-ghub.github.io/fonts/Knockout-HTF49-Liteweight.woff2')format('woff2');font-weight:400;font-style:normal}
+@font-face{font-family:'Knockout';src:url('https://tscarlisle-ghub.github.io/fonts/Knockout-HTF68-FullFeatherwt.woff2')format('woff2');font-weight:600;font-style:normal}
+@font-face{font-family:'Knockout';src:url('https://tscarlisle-ghub.github.io/fonts/Knockout-HTF73-FullHeviweight.woff2')format('woff2');font-weight:800;font-style:normal}
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --paper:#f8f6f1;--paper-2:#f0ede6;--paper-3:#e8e4db;
+  --ink:#1c1a17;--ink-2:#3d3a34;--ink-3:#7a7670;--ink-4:#b0ada6;
+  --rule:rgba(28,26,23,.12);--rule-md:rgba(28,26,23,.28);--rule-hv:rgba(28,26,23,.58);
+  --red:#7a2515;--red-lt:#f9f0ed;--green:#1a4020;--green-lt:#eef3ec;--amber:#8a5a12;--amber-lt:#faf1e2;
+}
+html{font-size:15px}
+body{font-family:'Eames Century Modern',Georgia,serif;font-weight:400;background:var(--paper);color:var(--ink);line-height:1.55;padding:40px 40px 96px;max-width:1520px;margin:0 auto}
+
+/* MASTHEAD */
+.mast{border-top:1.5px solid var(--ink);border-bottom:.5px solid var(--rule-md);padding:14px 0 12px;display:grid;grid-template-columns:1fr auto;align-items:end;gap:24px;margin-bottom:24px}
+.mast-title{font-family:'Knockout',sans-serif;font-weight:600;font-size:30px;letter-spacing:.05em;text-transform:uppercase;line-height:1}
+.mast-sub{font-family:'Interstate',sans-serif;font-weight:100;font-size:10.5px;letter-spacing:.15em;text-transform:uppercase;color:var(--ink-3);margin-top:5px}
+.mast-meta{text-align:right;font-family:'Interstate',sans-serif;font-weight:300;font-size:10px;color:var(--ink-3);line-height:2;letter-spacing:.04em}
+
+/* SAVE STRIP */
+.save-strip{display:flex;flex-wrap:wrap;align-items:center;gap:12px;padding:9px 0 18px;font-family:'Interstate',sans-serif;font-weight:300;font-size:10px;letter-spacing:.08em;color:var(--ink-3)}
+.save-strip button,.save-strip .load-lbl{font-family:'Interstate',sans-serif;font-weight:400;font-size:10px;letter-spacing:.1em;text-transform:uppercase;background:transparent;border:.5px solid var(--rule-hv);padding:5px 12px;cursor:pointer;color:var(--ink-2);display:inline-block}
+.save-strip button.primary{border-color:var(--ink);background:var(--ink);color:var(--paper)}
+.save-strip button.primary:hover{background:var(--ink-2)}
+.save-strip button:hover,.save-strip .load-lbl:hover{background:var(--paper-3)}
+.save-strip .status{font-style:italic;white-space:nowrap}
+.save-strip .spacer{flex:1 1 auto}
+.save-strip .hint{font-style:italic;color:var(--ink-4);font-size:9.5px;width:100%}
+
+/* DASHBOARD BAND */
+.band{display:grid;grid-template-columns:repeat(6,1fr);border-top:.5px solid var(--rule-hv);border-bottom:.5px solid var(--rule-hv);margin-bottom:32px}
+.bc{padding:12px 0;border-right:.5px solid var(--rule);position:relative}
+.bc:last-child{border-right:none}
+.bc:not(:first-child){padding-left:18px}
+.bc-label{font-family:'Interstate',sans-serif;font-weight:300;font-size:8.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-4);margin-bottom:3px;display:flex;align-items:center;gap:5px}
+.bc-val{font-family:'Interstate Condensed',sans-serif;font-weight:400;font-size:18px;letter-spacing:.01em}
+.bc-sub{font-family:'Interstate',sans-serif;font-weight:300;font-size:9px;color:var(--ink-4);margin-top:2px}
+.bc-val.pos{color:var(--green)}
+.bc-val.neg{color:var(--red)}
+@media (max-width:1100px){.band{grid-template-columns:repeat(3,1fr)}.bc:nth-child(3n+1){padding-left:0}.bc:nth-child(3n){border-right:none}}
+@media (max-width:640px){.band{grid-template-columns:repeat(2,1fr)}}
+
+/* PANEL (dropbox check) */
+.panel{border-top:.5px solid var(--rule-hv);border-bottom:.5px solid var(--rule-hv);padding:12px 0;margin-bottom:32px;font-family:'Interstate',sans-serif;font-weight:300;font-size:11px;color:var(--ink-2);display:flex;flex-wrap:wrap;align-items:center;gap:14px}
+.panel strong{font-weight:400;color:var(--ink)}
+.panel button{font-family:'Interstate',sans-serif;font-weight:400;font-size:10px;letter-spacing:.1em;text-transform:uppercase;background:transparent;border:.5px solid var(--rule-hv);padding:5px 12px;cursor:pointer;color:var(--ink-2)}
+.panel button:hover{background:var(--paper-3)}
+.panel .txt{flex:1 1 320px}
+
+/* FILTER BAR */
+.filters{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:14px;font-family:'Interstate',sans-serif;font-size:11px}
+.filters input[type=text],.filters select{font-family:'Interstate',sans-serif;font-weight:400;font-size:11px;color:var(--ink);background:var(--paper);border:.5px solid var(--rule-hv);padding:6px 9px;letter-spacing:.02em}
+.filters label{font-weight:300;letter-spacing:.1em;text-transform:uppercase;font-size:8.5px;color:var(--ink-4);margin-right:5px}
+.filters .fgrp{display:flex;align-items:center}
+.filters button.clear{font-family:'Interstate',sans-serif;font-weight:400;font-size:10px;letter-spacing:.1em;text-transform:uppercase;background:transparent;border:.5px solid var(--rule-md);padding:6px 12px;cursor:pointer;color:var(--ink-3)}
+.filters button.clear:hover{border-color:var(--red);color:var(--red)}
+.filters .count{margin-left:auto;font-style:italic;color:var(--ink-4);font-size:10.5px}
+
+/* TABLE */
+.table-wrap{overflow-x:auto;border-top:1px solid var(--rule-hv);margin-bottom:20px}
+table{width:100%;border-collapse:collapse;font-size:12px;min-width:1360px}
+thead tr{border-bottom:.5px solid var(--rule-hv)}
+thead th{font-family:'Interstate',sans-serif;font-weight:300;font-size:8px;letter-spacing:.13em;text-transform:uppercase;color:var(--ink-4);padding:8px 6px;text-align:left;white-space:nowrap;cursor:pointer;user-select:none}
+thead th:hover{color:var(--ink-2)}
+thead th.num{text-align:right}
+thead th .arrow{font-size:8px;margin-left:2px}
+tbody tr{border-bottom:.5px solid var(--rule)}
+tbody tr:hover{background:var(--paper-2)}
+tbody tr.overdue{background:var(--red-lt)}
+td{padding:6px;vertical-align:middle}
+td.num{text-align:right}
+
+.cell-input,.cell-select,.cell-date,.cell-num{font-family:'Interstate Condensed',sans-serif;font-weight:400;font-size:12px;color:var(--ink);background:transparent;border:none;border-bottom:.5px solid transparent;padding:3px 2px;width:100%;outline:none;transition:border-color .15s,background .12s}
+.cell-input{font-family:'Eames Century Modern',Georgia,serif;font-size:12px}
+.cell-input:hover,.cell-select:hover,.cell-date:hover,.cell-num:hover{border-bottom-color:var(--rule-md)}
+.cell-input:focus,.cell-select:focus,.cell-date:focus,.cell-num:focus{background:var(--paper-3);border-bottom-color:var(--ink)}
+.cell-num{text-align:right;color:var(--red);font-weight:500}
+textarea.cell-input{resize:vertical;min-height:30px;line-height:1.4}
+select.cell-select{-webkit-appearance:none;appearance:none;background-image:none;cursor:pointer}
+
+.vendor-cell{min-width:130px}
+.desc-cell{min-width:200px}
+.amt-cell{min-width:100px;position:relative}
+.amt-badge{font-size:9px;color:var(--ink-4);cursor:help;border-bottom:1px dotted var(--ink-4);margin-left:3px}
+.fx-row{display:flex;gap:3px;align-items:center;margin-top:2px}
+.fx-row select,.fx-row input{font-family:'Interstate',sans-serif;font-size:9px;padding:2px 3px;border:.5px solid var(--rule-md);background:var(--paper)}
+.fx-row input{width:56px}
+.fx-btn{font-size:8.5px;letter-spacing:.05em;text-transform:uppercase;background:var(--ink);color:var(--paper);border:none;padding:2px 5px;cursor:pointer}
+.fx-toggle{font-family:'Interstate',sans-serif;font-size:8.5px;color:var(--ink-4);cursor:pointer;text-decoration:underline;text-underline-offset:2px;margin-top:1px;display:inline-block}
+
+.var-val{font-family:'Interstate Condensed',sans-serif;font-weight:500;font-size:12px}
+.var-val.over{color:var(--red)}
+.var-val.under{color:var(--green)}
+.var-pct{font-family:'Interstate',sans-serif;font-size:9px;color:var(--ink-4);display:block}
+
+.status-pill{font-family:'Interstate',sans-serif;font-weight:400;font-size:9.5px;letter-spacing:.06em;text-transform:uppercase;padding:3px 4px;border:.5px solid transparent;background:transparent;cursor:pointer;width:100%}
+.status-pill.pending{color:var(--amber);border-color:var(--amber);background:var(--amber-lt)}
+.status-pill.paid{color:var(--green);border-color:var(--green);background:var(--green-lt)}
+.status-pill.disputed{color:var(--red);border-color:var(--red);background:var(--red-lt)}
+
+.att-cell{min-width:100px;font-family:'Interstate',sans-serif;font-size:10px}
+.att-link{color:var(--ink-2);text-decoration:underline;text-underline-offset:2px;cursor:pointer}
+.att-name{display:block;max-width:110px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--ink-3);font-style:italic}
+.att-remove{color:var(--red);cursor:pointer;font-size:9px;margin-left:4px}
+.upload-lbl{font-family:'Interstate',sans-serif;font-weight:400;font-size:9.5px;letter-spacing:.06em;text-transform:uppercase;border:.5px dashed var(--rule-md);padding:4px 8px;cursor:pointer;color:var(--ink-3);display:inline-block}
+.upload-lbl:hover{border-color:var(--ink-3);color:var(--ink)}
+
+.del-btn{font-family:'Interstate',sans-serif;font-size:13px;color:var(--ink-4);background:none;border:none;cursor:pointer;padding:2px 6px}
+.del-btn:hover{color:var(--red)}
+
+.add-row{margin:10px 0 40px}
+.add-row button{font-family:'Interstate',sans-serif;font-weight:400;font-size:11px;letter-spacing:.1em;text-transform:uppercase;background:transparent;border:1px solid var(--ink);padding:8px 18px;cursor:pointer;color:var(--ink)}
+.add-row button:hover{background:var(--ink);color:var(--paper)}
+
+.empty-state{padding:40px 0;text-align:center;font-style:italic;color:var(--ink-4);font-size:13px}
+
+.fn{margin-top:36px;padding-top:12px;border-top:.5px solid var(--rule);font-family:'Interstate',sans-serif;font-weight:300;font-size:9px;color:var(--ink-4);letter-spacing:.05em;line-height:2.1}
+
+/* Dropbox check results */
+.dbx-report{margin-top:10px;font-family:'Interstate',sans-serif;font-size:11px;line-height:1.8;width:100%}
+.dbx-report ul{list-style:none;margin-top:4px}
+.dbx-report li{padding:2px 0;border-bottom:.5px solid var(--rule)}
+</style>
+</head>
+<body>
+
+<div class="mast">
+  <div>
+    <div class="mast-title">Mtn Brook Village Office — Project Finances</div>
+    <div class="mast-sub">2401½ Canterbury Road &middot; Mountain Brook, Alabama &middot; Master Ledger</div>
+  </div>
+  <div class="mast-meta">Carlisle Moore Architects<br><span id="today-meta"></span><br>TCC &middot; GHT &middot; Emory Ratliff</div>
+</div>
+
+<div class="save-strip">
+  <button class="primary" onclick="exportLedger()">Save (export ledger-data.json)</button>
+  <label class="load-lbl" title="Load a previously exported ledger-data.json">Load ledger-data.json<input type="file" accept=".json" style="display:none" onchange="importLedgerFile(this)"></label>
+  <button onclick="clearAll()">Clear all</button>
+  <span class="status" id="save-status"></span>
+  <span class="spacer"></span>
+  <span class="hint">Autosaves to this browser as you work &middot; use Save to export a file to commit to your GitHub repo &middot; when hosted on GitHub Pages the app auto-loads ledger-data.json on first visit from a new browser</span>
+</div>
+
+<div class="band">
+  <div class="bc"><div class="bc-label">Total Estimated</div><div class="bc-val" id="d-est">$0.00</div></div>
+  <div class="bc"><div class="bc-label">Total Invoiced (Actual)</div><div class="bc-val" id="d-inv">$0.00</div></div>
+  <div class="bc"><div class="bc-label">Total Paid</div><div class="bc-val" id="d-paid">$0.00</div></div>
+  <div class="bc"><div class="bc-label">Remaining (Owed)<span title="Total Invoiced minus Total Paid" style="cursor:help">ⓘ</span></div><div class="bc-val" id="d-owed">$0.00</div></div>
+  <div class="bc"><div class="bc-label">Variance<span title="Actual (Invoiced) minus Estimated — red is over budget, green is under" style="cursor:help">ⓘ</span></div><div class="bc-val" id="d-var">$0.00</div></div>
+  <div class="bc"><div class="bc-label">Due Next 30 Days</div><div class="bc-val" id="d-due30">$0.00</div><div class="bc-sub" id="d-due30-count">0 payments</div></div>
+</div>
+
+<div class="panel">
+  <span class="txt"><strong>Dropbox completeness check</strong> — I can't compare live from inside this page since it's a static file, but ask me any time ("check Dropbox against my ledger") and I'll list your Cost Tracking folder and flag anything not logged yet.</span>
+  <button onclick="copyManifest()">Copy ledger manifest for the check</button>
+</div>
+
+<div class="filters">
+  <div class="fgrp"><label>Vendor</label><input type="text" id="f-vendor" placeholder="Search vendor…" oninput="renderTable()"></div>
+  <div class="fgrp"><label>Category</label><select id="f-category" onchange="renderTable()"><option value="">All</option></select></div>
+  <div class="fgrp"><label>Status</label><select id="f-status" onchange="renderTable()"><option value="">All</option></select></div>
+  <button class="clear" onclick="clearFilters()">Clear filters</button>
+  <span class="count" id="f-count"></span>
+</div>
+
+<div class="table-wrap">
+<table>
+<thead>
+<tr>
+  <th data-sort="vendor">Vendor <span class="arrow"></span></th>
+  <th data-sort="category">Category <span class="arrow"></span></th>
+  <th>Description</th>
+  <th class="num" data-sort="est">Estimated <span class="arrow"></span></th>
+  <th class="num" data-sort="inv">Actual (Invoiced) <span class="arrow"></span></th>
+  <th class="num">Variance</th>
+  <th class="num" data-sort="paid">Paid <span class="arrow"></span></th>
+  <th data-sort="status">Status <span class="arrow"></span></th>
+  <th data-sort="dueDate">Due <span class="arrow"></span></th>
+  <th>Attachment</th>
+  <th data-sort="dateAdded">Added <span class="arrow"></span></th>
+  <th></th>
+</tr>
+</thead>
+<tbody id="ledger-body"></tbody>
+</table>
+</div>
+
+<div class="add-row"><button onclick="addEntry()">+ Add Entry</button></div>
+
+<div class="fn" id="dbx-report-wrap" style="display:none">
+  <div class="dbx-report" id="dbx-report"></div>
+</div>
+
+<div class="fn">
+  Categories: Contract &middot; Invoice &middot; Cost Estimate &middot; Receipt &middot; GHT &middot; Other &mdash; Statuses: Pending &middot; Paid &middot; Disputed<br>
+  Variance = Actual (Invoiced) minus Estimated &middot; Remaining (Owed) = Total Invoiced minus Total Paid<br>
+  Foreign-currency amounts are converted to USD at the live rate when entered (via frankfurter.app) and stored alongside the original amount for reference<br>
+  Data autosaves to this browser's local database (IndexedDB) &middot; export/commit ledger-data.json alongside index.html so a new browser or device loads the same starting data from your repo
+</div>
+
+<script>
+/* ============================= CONFIG ============================= */
+const CATEGORIES = ['Contract','Invoice','Cost Estimate','Receipt','GHT','Other'];
+const STATUSES = ['Pending','Paid','Disputed'];
+const CURRENCIES = ['USD','EUR','GBP','CAD','MXN','JPY','CNY','AUD','CHF','Other'];
+const DB_NAME='cma_finance_db', DB_VERSION=1, STORE='ledger';
+
+/* ============================= STATE ============================= */
+let state = { entries: [] };
+let sortField = 'dueDate', sortDir = 'asc';
+
+document.getElementById('today-meta').textContent = 'Viewed ' + new Date().toLocaleDateString('en-US',{month:'numeric',day:'numeric',year:'numeric'});
+CATEGORIES.forEach(c=>{ const o=document.createElement('option'); o.value=c; o.textContent=c; document.getElementById('f-category').appendChild(o); });
+STATUSES.forEach(s=>{ const o=document.createElement('option'); o.value=s; o.textContent=s; document.getElementById('f-status').appendChild(o); });
+
+/* ============================= UTIL ============================= */
+function uuid(){
+  if(window.crypto && crypto.randomUUID) return crypto.randomUUID();
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,c=>{
+    const r=Math.random()*16|0, v=c==='x'?r:(r&0x3|0x8); return v.toString(16);
+  });
+}
+function fmtUSD(n){
+  n = n||0;
+  const a=Math.abs(n), s=a.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+  return (n<0?'−$':'$')+s;
+}
+function todayISO(){ return new Date().toISOString().slice(0,10); }
+function amt(field){ return (field && typeof field.usd==='number') ? field.usd : 0; }
+function newAmt(usd){ return {usd: usd||0, orig: null}; }
+
+function actualOf(e){ return amt(e.inv) > 0 ? amt(e.inv) : 0; }
+function varianceOf(e){ const est=amt(e.est); const act=actualOf(e); if(!est && !act) return null; return act - est; }
+function owedOf(e){ return Math.max(amt(e.inv) - amt(e.paid), 0); }
+function isDueSoon(dateStr){
+  if(!dateStr) return false;
+  const due=new Date(dateStr+'T00:00:00'), now=new Date(); now.setHours(0,0,0,0);
+  const in30=new Date(now); in30.setDate(now.getDate()+30);
+  return due>=now && due<=in30;
+}
+function isOverdue(e){
+  if(!e.dueDate || e.status==='Paid') return false;
+  const due=new Date(e.dueDate+'T00:00:00'), now=new Date(); now.setHours(0,0,0,0);
+  return due<now;
+}
+
+/* ============================= INDEXEDDB ============================= */
+function openDB(){
+  return new Promise((resolve,reject)=>{
+    const req = indexedDB.open(DB_NAME, DB_VERSION);
+    req.onupgradeneeded = ()=>{ req.result.createObjectStore(STORE); };
+    req.onsuccess = ()=>resolve(req.result);
+    req.onerror = ()=>reject(req.error);
+  });
+}
+async function dbSave(entries){
+  const db = await openDB();
+  return new Promise((resolve,reject)=>{
+    const tx = db.transaction(STORE,'readwrite');
+    tx.objectStore(STORE).put(entries,'entries');
+    tx.oncomplete = ()=>resolve();
+    tx.onerror = ()=>reject(tx.error);
+  });
+}
+async function dbLoad(){
+  const db = await openDB();
+  return new Promise((resolve,reject)=>{
+    const tx = db.transaction(STORE,'readonly');
+    const req = tx.objectStore(STORE).get('entries');
+    req.onsuccess = ()=>resolve(req.result||[]);
+    req.onerror = ()=>reject(req.error);
+  });
+}
+
+let autosaveTimer=null;
+function scheduleAutosave(){
+  setStatus('Saving…', 0);
+  clearTimeout(autosaveTimer);
+  autosaveTimer = setTimeout(async ()=>{
+    try{ await dbSave(state.entries); setStatus('Autosaved to browser · '+new Date().toLocaleTimeString()); }
+    catch(err){ setStatus('Autosave failed — your browser may be blocking local storage'); }
+  }, 500);
+}
+function setStatus(msg, ms=6000){
+  const st=document.getElementById('save-status');
+  st.textContent=msg;
+  if(ms>0) setTimeout(()=>{ if(st.textContent===msg) st.textContent=''; }, ms);
+}
+
+/* ============================= EXPORT / IMPORT ============================= */
+function exportLedger(){
+  const payload = {
+    _meta:{
+      exported: new Date().toISOString(),
+      project: 'Mtn Brook Village Office — 2401½ Canterbury Road',
+      note: 'Commit this file as ledger-data.json alongside index.html in the GitHub repo. A browser with an empty local database will auto-load it on first visit.'
+    },
+    entries: state.entries
+  };
+  const blob = new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'ledger-data.json';
+  a.click();
+  URL.revokeObjectURL(a.href);
+  setStatus('Exported ledger-data.json — commit it to your GitHub repo to sync across devices');
+}
+
+function importLedgerFile(input){
+  const file = input.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = e=>{
+    try{
+      const data = JSON.parse(e.target.result);
+      const entries = data.entries || data;
+      if(!Array.isArray(entries)) throw new Error('bad format');
+      if(!confirm('Load '+entries.length+' entries from '+file.name+'? This replaces your current ledger in this browser.')) { input.value=''; return; }
+      state.entries = entries;
+      scheduleAutosave();
+      renderAll();
+      setStatus('Loaded '+entries.length+' entries from '+file.name);
+    }catch(err){
+      setStatus('Could not parse '+file.name+' — is it a valid ledger-data.json?');
+    }
+    input.value='';
+  };
+  reader.readAsText(file);
+}
+
+async function autoLoadFromRepo(){
+  if(!location.protocol.startsWith('http')) return;
+  try{
+    const res = await fetch('./ledger-data.json',{cache:'no-cache'});
+    if(!res.ok) return;
+    const data = await res.json();
+    const entries = data.entries || data;
+    if(!Array.isArray(entries) || !entries.length) return;
+    if(state.entries.length===0){
+      state.entries = entries;
+      scheduleAutosave();
+      renderAll();
+      setStatus('Loaded '+entries.length+' entries from ledger-data.json (repo backup)', 8000);
+    } else {
+      const el = document.getElementById('save-status');
+      el.innerHTML = 'Repo backup available (' + entries.length + ' entries) — <a href="#" onclick="loadRepoBackup(event)" style="color:var(--red)">load it</a>';
+    }
+  }catch(_){}
+}
+async function loadRepoBackup(ev){
+  ev.preventDefault();
+  const res = await fetch('./ledger-data.json',{cache:'no-cache'});
+  const data = await res.json();
+  const entries = data.entries || data;
+  if(!confirm('Load '+entries.length+' entries from the repo\'s ledger-data.json? This replaces your current ledger in this browser.')) return;
+  state.entries = entries;
+  scheduleAutosave();
+  renderAll();
+  setStatus('Loaded '+entries.length+' entries from repo backup');
+}
+
+function clearAll(){
+  if(!confirm('Delete ALL entries from this browser\'s ledger? This cannot be undone (export a backup first if unsure).')) return;
+  state.entries = [];
+  scheduleAutosave();
+  renderAll();
+  setStatus('Cleared all entries');
+}
+
+/* ============================= CURRENCY ============================= */
+async function convertToUSD(amount, currency){
+  if(currency==='USD') return { usd: amount, rate: 1 };
+  const res = await fetch(`https://api.frankfurter.app/latest?amount=${amount}&from=${currency}&to=USD`);
+  if(!res.ok) throw new Error('conversion failed');
+  const data = await res.json();
+  const usd = data.rates.USD;
+  return { usd, rate: amount ? usd/amount : 0 };
+}
+
+/* ============================= ATTACHMENTS ============================= */
+function dataURLtoBlob(dataurl){
+  const arr = dataurl.split(','), mime = arr[0].match(/:(.*?);/)[1];
+  const bstr = atob(arr[1]); let n = bstr.length; const u8 = new Uint8Array(n);
+  while(n--) u8[n] = bstr.charCodeAt(n);
+  return new Blob([u8],{type:mime});
+}
+function viewAttachment(id){
+  const e = state.entries.find(x=>x.id===id);
+  if(!e || !e.attachment) return;
+  const blob = dataURLtoBlob(e.attachment.dataUrl);
+  const url = URL.createObjectURL(blob);
+  window.open(url,'_blank');
+  setTimeout(()=>URL.revokeObjectURL(url), 60000);
+}
+function uploadAttachment(id, input){
+  const file = input.files[0];
+  if(!file) return;
+  if(file.type !== 'application/pdf'){
+    if(!confirm('This file is not a PDF ('+(file.type||'unknown type')+'). Attach it anyway?')){ input.value=''; return; }
+  }
+  const reader = new FileReader();
+  reader.onload = e=>{
+    const entry = state.entries.find(x=>x.id===id);
+    entry.attachment = { name:file.name, type:file.type, size:file.size, dataUrl:e.target.result, uploadedAt:new Date().toISOString() };
+    scheduleAutosave();
+    renderTable();
+  };
+  reader.readAsDataURL(file);
+}
+function removeAttachment(id){
+  const entry = state.entries.find(x=>x.id===id);
+  if(!entry.attachment) return;
+  if(!confirm('Remove attachment "'+entry.attachment.name+'"?')) return;
+  entry.attachment = null;
+  scheduleAutosave();
+  renderTable();
+}
+
+/* ============================= ENTRY CRUD ============================= */
+function addEntry(){
+  const e = {
+    id: uuid(), vendor:'', category:'Other', description:'',
+    est:newAmt(0), inv:newAmt(0), paid:newAmt(0),
+    status:'Pending', dueDate:'', dateAdded: todayISO(),
+    attachment:null
+  };
+  state.entries.unshift(e);
+  scheduleAutosave();
+  renderAll();
+  const row = document.querySelector('tr[data-id="'+e.id+'"] input.vendor-input');
+  if(row) row.focus();
+}
+function deleteEntry(id){
+  const e = state.entries.find(x=>x.id===id);
+  if(!confirm('Delete entry for "'+(e.vendor||'(no vendor)')+'"?')) return;
+  state.entries = state.entries.filter(x=>x.id!==id);
+  scheduleAutosave();
+  renderAll();
+}
+function updateField(id, field, value){
+  const e = state.entries.find(x=>x.id===id);
+  if(!e) return;
+  e[field] = value;
+  scheduleAutosave();
+  // Defer any DOM rebuild past the current blur/change dispatch cycle — rebuilding
+  // the table synchronously from within a field's own change handler can throw in
+  // some browsers if that field is mid-blur.
+  if(field==='dueDate' || field==='status') setTimeout(renderAll, 0); else setTimeout(renderDashboard, 0);
+}
+async function updateAmountUSD(id, field, value){
+  const e = state.entries.find(x=>x.id===id);
+  if(!e) return;
+  const v = parseFloat(value);
+  e[field].usd = isNaN(v) ? 0 : v;
+  e[field].orig = null; // direct USD entry clears any prior conversion note
+  scheduleAutosave();
+  setTimeout(renderAll, 0);
+}
+async function applyConversion(id, field, amountVal, currency){
+  const e = state.entries.find(x=>x.id===id);
+  if(!e) return;
+  const amountNum = parseFloat(amountVal);
+  if(isNaN(amountNum)){ alert('Enter a numeric amount to convert.'); return; }
+  try{
+    setStatus('Converting '+currency+' → USD…', 0);
+    const { usd, rate } = await convertToUSD(amountNum, currency);
+    e[field] = { usd, orig: { amount: amountNum, currency, rate, fetchedAt: new Date().toISOString() } };
+    scheduleAutosave();
+    renderAll();
+    setStatus('Converted '+amountNum+' '+currency+' → '+fmtUSD(usd));
+  }catch(err){
+    setStatus('Conversion failed — check your connection, or enter the USD amount directly');
+  }
+}
+
+/* ============================= FILTER / SORT ============================= */
+function clearFilters(){
+  document.getElementById('f-vendor').value='';
+  document.getElementById('f-category').value='';
+  document.getElementById('f-status').value='';
+  renderTable();
+}
+function getFiltered(){
+  const vq = document.getElementById('f-vendor').value.trim().toLowerCase();
+  const cat = document.getElementById('f-category').value;
+  const st = document.getElementById('f-status').value;
+  let rows = state.entries.filter(e=>{
+    if(vq && !(e.vendor||'').toLowerCase().includes(vq)) return false;
+    if(cat && e.category!==cat) return false;
+    if(st && e.status!==st) return false;
+    return true;
+  });
+  rows.sort((a,b)=>{
+    let av, bv;
+    if(sortField==='est'||sortField==='inv'||sortField==='paid'){ av=amt(a[sortField]); bv=amt(b[sortField]); }
+    else { av=(a[sortField]||''); bv=(b[sortField]||''); }
+    if(sortField==='dueDate'){
+      av = a.dueDate || '9999-99-99'; bv = b.dueDate || '9999-99-99';
+    }
+    if(typeof av==='string') av=av.toLowerCase();
+    if(typeof bv==='string') bv=bv.toLowerCase();
+    if(av<bv) return sortDir==='asc'?-1:1;
+    if(av>bv) return sortDir==='asc'?1:-1;
+    return 0;
+  });
+  return rows;
+}
+document.querySelectorAll('thead th[data-sort]').forEach(th=>{
+  th.addEventListener('click', ()=>{
+    const f = th.dataset.sort;
+    if(sortField===f) sortDir = sortDir==='asc'?'desc':'asc';
+    else { sortField=f; sortDir='asc'; }
+    renderTable();
+  });
+});
+
+/* ============================= RENDER ============================= */
+function optionList(list, selected){
+  return list.map(v=>`<option value="${v}" ${v===selected?'selected':''}>${v}</option>`).join('');
+}
+function fxBadge(field, label){
+  if(!field.orig) return '';
+  const o = field.orig;
+  const title = `Converted from ${o.currency} ${o.amount.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})} @ ${o.rate.toFixed(4)} on ${new Date(o.fetchedAt).toLocaleDateString()}`;
+  return `<span class="amt-badge" title="${title}">${o.currency}</span>`;
+}
+function amountCell(e, field, label){
+  const f = e[field];
+  const fxRowId = e.id+'-'+field+'-fx';
+  return `
+    <td class="num amt-cell">
+      <input class="cell-num" type="number" step="0.01" value="${f.usd?f.usd.toFixed(2):''}" placeholder="0.00"
+        onchange="updateAmountUSD('${e.id}','${field}',this.value)">${fxBadge(f,label)}
+      <span class="fx-toggle" onclick="document.getElementById('${fxRowId}').style.display=document.getElementById('${fxRowId}').style.display==='flex'?'none':'flex'">convert&nbsp;currency</span>
+      <div class="fx-row" id="${fxRowId}" style="display:none">
+        <select id="${fxRowId}-cur">${optionList(CURRENCIES.filter(c=>c!=='USD'), f.orig?f.orig.currency:'EUR')}</select>
+        <input type="number" step="0.01" id="${fxRowId}-amt" placeholder="amount" value="${f.orig?f.orig.amount:''}">
+        <button class="fx-btn" onclick="applyConversion('${e.id}','${field}',document.getElementById('${fxRowId}-amt').value,document.getElementById('${fxRowId}-cur').value)">Go</button>
+      </div>
+    </td>`;
+}
+function varianceCell(e){
+  const v = varianceOf(e);
+  if(v===null) return `<td class="num"><span class="var-val" style="color:var(--ink-4)">—</span></td>`;
+  const est = amt(e.est);
+  const pct = est ? (v/est*100) : null;
+  const cls = v>0.005 ? 'over' : (v<-0.005 ? 'under' : '');
+  return `<td class="num">
+    <span class="var-val ${cls}">${v>=0?'+':'−'}${fmtUSD(Math.abs(v))}</span>
+    ${pct!==null?`<span class="var-pct">${v>=0?'+':'−'}${Math.abs(pct).toFixed(1)}%</span>`:''}
+  </td>`;
+}
+function attachmentCell(e){
+  if(e.attachment){
+    return `<td class="att-cell">
+      <span class="att-link" onclick="viewAttachment('${e.id}')">View</span>
+      <span class="att-name" title="${e.attachment.name}">${e.attachment.name}</span>
+      <span class="att-remove" onclick="removeAttachment('${e.id}')">remove</span>
+    </td>`;
+  }
+  return `<td class="att-cell">
+    <label class="upload-lbl">Upload<input type="file" accept="application/pdf" style="display:none" onchange="uploadAttachment('${e.id}',this)"></label>
+  </td>`;
+}
+function rowHTML(e){
+  const overdue = isOverdue(e);
+  return `<tr data-id="${e.id}" class="${overdue?'overdue':''}">
+    <td class="vendor-cell"><input class="cell-input vendor-input" type="text" value="${(e.vendor||'').replace(/"/g,'&quot;')}" placeholder="Vendor / source" onchange="updateField('${e.id}','vendor',this.value)"></td>
+    <td><select class="cell-select" onchange="updateField('${e.id}','category',this.value)">${optionList(CATEGORIES, e.category)}</select></td>
+    <td class="desc-cell"><textarea class="cell-input" rows="1" placeholder="Description / notes" onchange="updateField('${e.id}','description',this.value)">${(e.description||'')}</textarea></td>
+    ${amountCell(e,'est','Estimated')}
+    ${amountCell(e,'inv','Actual')}
+    ${varianceCell(e)}
+    ${amountCell(e,'paid','Paid')}
+    <td><select class="status-pill ${e.status.toLowerCase()}" onchange="updateField('${e.id}','status',this.value)">${optionList(STATUSES, e.status)}</select></td>
+    <td><input class="cell-date" type="date" value="${e.dueDate||''}" onchange="updateField('${e.id}','dueDate',this.value)"></td>
+    ${attachmentCell(e)}
+    <td><input class="cell-date" type="date" value="${e.dateAdded||''}" onchange="updateField('${e.id}','dateAdded',this.value)"></td>
+    <td><button class="del-btn" title="Delete entry" onclick="deleteEntry('${e.id}')">&times;</button></td>
+  </tr>`;
+}
+function captureFocus(){
+  const el = document.activeElement;
+  if(!el || !el.closest) return null;
+  const tr = el.closest('tr[data-id]');
+  if(!tr) return null;
+  const cells = Array.from(tr.querySelectorAll('input,select,textarea'));
+  const idx = cells.indexOf(el);
+  if(idx<0) return null;
+  return { id: tr.dataset.id, idx, selStart: el.selectionStart, selEnd: el.selectionEnd };
+}
+function restoreFocus(info){
+  if(!info) return;
+  const tr = document.querySelector('tr[data-id="'+info.id+'"]');
+  if(!tr) return;
+  const cells = Array.from(tr.querySelectorAll('input,select,textarea'));
+  const el = cells[info.idx];
+  if(!el) return;
+  el.focus();
+  if(typeof info.selStart==='number' && el.setSelectionRange){
+    try{ el.setSelectionRange(info.selStart, info.selEnd); }catch(_){}
+  }
+}
+function renderTable(){
+  const focusInfo = captureFocus();
+  const rows = getFiltered();
+  const body = document.getElementById('ledger-body');
+  document.querySelectorAll('thead th[data-sort]').forEach(th=>{
+    const arrow = th.querySelector('.arrow');
+    arrow.textContent = th.dataset.sort===sortField ? (sortDir==='asc'?'↑':'↓') : '';
+  });
+  if(!rows.length){
+    body.innerHTML = `<tr><td colspan="12"><div class="empty-state">${state.entries.length?'No entries match these filters.':'No entries yet — add your first one below.'}</div></td></tr>`;
+  } else {
+    body.innerHTML = rows.map(rowHTML).join('');
+  }
+  restoreFocus(focusInfo);
+  document.getElementById('f-count').textContent = rows.length + ' of ' + state.entries.length + ' entries';
+  renderDashboard();
+}
+function renderDashboard(){
+  let est=0, inv=0, paid=0, owed=0, variance=0, due30=0, due30n=0;
+  state.entries.forEach(e=>{
+    est += amt(e.est);
+    inv += amt(e.inv);
+    paid += amt(e.paid);
+    owed += owedOf(e);
+    const v = varianceOf(e);
+    if(v!==null) variance += v;
+    if(isDueSoon(e.dueDate) && e.status!=='Paid'){
+      due30 += owedOf(e) || amt(e.est);
+      due30n++;
+    }
+  });
+  document.getElementById('d-est').textContent = fmtUSD(est);
+  document.getElementById('d-inv').textContent = fmtUSD(inv);
+  document.getElementById('d-paid').textContent = fmtUSD(paid);
+  document.getElementById('d-owed').textContent = fmtUSD(owed);
+  const varEl = document.getElementById('d-var');
+  varEl.textContent = (variance>=0?'+':'−') + fmtUSD(Math.abs(variance));
+  varEl.className = 'bc-val ' + (variance>0.005?'neg':variance<-0.005?'pos':'');
+  document.getElementById('d-due30').textContent = fmtUSD(due30);
+  document.getElementById('d-due30-count').textContent = due30n + (due30n===1?' payment':' payments');
+}
+function renderAll(){ renderTable(); }
+
+/* ============================= DROPBOX MANIFEST ============================= */
+function copyManifest(){
+  const manifest = state.entries.map(e=>({
+    vendor: e.vendor, category: e.category, description: e.description,
+    attachment: e.attachment ? e.attachment.name : null,
+    est: amt(e.est), inv: amt(e.inv), paid: amt(e.paid), status: e.status, dueDate: e.dueDate
+  }));
+  const text = JSON.stringify({ledgerManifest: manifest, generated: new Date().toISOString()}, null, 2);
+  navigator.clipboard.writeText(text).then(()=>{
+    setStatus('Ledger manifest copied — paste it to me and ask me to check it against Dropbox');
+  }).catch(()=>{
+    setStatus('Could not copy automatically — export the ledger instead and share that file with me');
+  });
+}
+
+/* ============================= INIT ============================= */
+(async function init(){
+  try{ state.entries = await dbLoad(); }catch(err){ state.entries = []; }
+  renderAll();
+  autoLoadFromRepo();
+})();
+</script>
+</body>
+</html>
