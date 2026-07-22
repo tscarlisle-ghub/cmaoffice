@@ -95,8 +95,8 @@ thead th.num{text-align:right}
 thead th .arrow{color:var(--rust);margin-left:2px}
 tbody tr{border-bottom:1px solid var(--hairline)}
 tbody tr:hover{background:var(--rust-wash)}
-tbody tr.overdue{background:var(--forest-wash)}
-tbody tr.overdue:hover{background:var(--rust-wash)}
+tbody tr.overdue{background:rgba(138,42,31,.07)}
+tbody tr.overdue:hover{background:rgba(138,42,31,.14)}
 td{padding:9px 7px;vertical-align:middle}
 td.num{text-align:right}
 
@@ -210,7 +210,7 @@ select.f-in{appearance:none;background-image:none;cursor:pointer}
       <div class="kpi-note">rust over &middot; forest under</div>
     </div>
     <div class="kpi-cell">
-      <div class="kpi-of">Due Next 30 Days</div>
+      <div class="kpi-of">Due / Overdue <span class="info" title="Anything due within 30 days, plus anything already past due">ⓘ</span></div>
       <div class="kpi-val tab rust" id="d-due30">$0</div>
       <div class="kpi-label" id="d-due30-count">0 Payments</div>
       <div class="kpi-note">not yet paid</div>
@@ -292,7 +292,7 @@ const ATTACH_ACCEPT = 'application/pdf,image/jpeg,image/jpg,image/png';
 
 /* ============================= STATE ============================= */
 let state = { entries: [] };
-let sortField = 'dueDate', sortDir = 'asc';
+let sortField = 'vendor', sortDir = 'asc';
 
 document.getElementById('today-meta').textContent = 'Viewed ' + new Date().toLocaleDateString('en-US',{month:'numeric',day:'numeric',year:'numeric'});
 CATEGORIES.forEach(c=>{ const o=document.createElement('option'); o.value=c; o.textContent=c; document.getElementById('f-category').appendChild(o); });
@@ -318,10 +318,13 @@ function actualOf(e){ return amt(e.inv) > 0 ? amt(e.inv) : 0; }
 function varianceOf(e){ const est=amt(e.est); const act=actualOf(e); if(!est && !act) return null; return act - est; }
 function owedOf(e){ return Math.max(amt(e.inv) - amt(e.paid), 0); }
 function isDueSoon(dateStr){
+  // "Due" bucket = anything due within the next 30 days OR already overdue —
+  // an overdue invoice is still money that needs attention now, not less.
   if(!dateStr) return false;
-  const due=new Date(dateStr+'T00:00:00'), now=new Date(); now.setHours(0,0,0,0);
+  const now=new Date(); now.setHours(0,0,0,0);
   const in30=new Date(now); in30.setDate(now.getDate()+30);
-  return due>=now && due<=in30;
+  const due=new Date(dateStr+'T00:00:00');
+  return due<=in30;
 }
 function isOverdue(e){
   if(!e.dueDate || e.status==='Paid') return false;
