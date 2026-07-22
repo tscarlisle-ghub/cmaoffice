@@ -21,6 +21,19 @@ The app loads Typekit at `https://use.typekit.net/wup0iix.css` (the same kit ref
 
 Attachments accept PDF, JPG, or PNG (handy for phone photos of receipts). Because they're stored inline as base64 inside the entries, `ledger-data.json` can get large if you attach many big files — GitHub is fine with this up to typical repo sizes, but keep an eye on it if you're attaching dozens of large scans.
 
+## Adding files
+
+Two ways to get files in:
+
+- **Per-entry** — click **+ PDF / JPG** on any row's Attachment cell to attach one file to that entry.
+- **+ Upload Files** — under the table, next to **+ Add Entry**. Pick one or several PDFs/JPGs/PNGs at once and the app creates one new entry per file, attached, with the vendor guessed from the filename (category defaults to "Other"). Review and fix up the vendor, category, and amounts afterward — the import doesn't try to read amounts out of the file itself.
+
+## Dropbox import (already done once)
+
+`ledger-data.json` currently ships pre-loaded with the 7 files found in your Cost Tracking Dropbox folder as of 7/22/2026 (the GHT A/V proposal, the TCC P&L backup referenced in Invoice 8348, and five Emory Ratliff reference photos — HEIC/PNG originals were converted to compressed JPEGs so they render in any browser). Every imported entry has **$0 amounts and Pending status** — that's deliberate, since the files don't state definitive contract amounts; open each one and fill in the real numbers. A stray `.fileloc` shortcut in that folder was skipped (it's a macOS pointer file, not a document).
+
+For future Dropbox syncs, ask Claude to check the folder against your ledger and either import new files the same way or just flag what's missing — whichever you'd rather do at the time.
+
 ## Publishing on GitHub
 
 1. Create (or reuse) a git repo in this folder and push it to GitHub.

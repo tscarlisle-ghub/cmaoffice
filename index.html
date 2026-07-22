@@ -261,7 +261,10 @@ select.f-in{appearance:none;background-image:none;cursor:pointer}
       </table>
       </div>
 
-      <div class="add-row"><button class="btn btn-primary" onclick="addEntry()">+ Add Entry</button></div>
+      <div class="add-row" style="display:flex;gap:12px;flex-wrap:wrap;align-items:center">
+        <button class="btn btn-primary" onclick="addEntry()">+ Add Entry</button>
+        <label class="btn btn-secondary">+ Upload Files (PDF / JPG / PNG)<input type="file" accept="application/pdf,image/jpeg,image/jpg,image/png" multiple style="display:none" onchange="bulkUploadFiles(this)"></label>
+      </div>
     </div>
   </div>
 
@@ -489,6 +492,36 @@ function uploadAttachment(id, input){
     renderTable();
   };
   reader.readAsDataURL(file);
+}
+function bulkUploadFiles(input){
+  const files = Array.from(input.files);
+  if(!files.length) return;
+  const okTypes = ['application/pdf','image/jpeg','image/jpg','image/png'];
+  const valid = files.filter(f=>okTypes.includes(f.type));
+  const skipped = files.length - valid.length;
+  if(!valid.length){ setStatus('No PDF/JPG/PNG files found in that selection'); input.value=''; return; }
+  let pending = valid.length, added = 0;
+  valid.forEach(file=>{
+    const reader = new FileReader();
+    reader.onload = e=>{
+      const guessVendor = file.name.replace(/\.[^.]+$/,'').replace(/[_\-]+/g,' ').trim();
+      state.entries.unshift({
+        id: uuid(), vendor: guessVendor, category: 'Other',
+        description: 'Imported file — review vendor, category, and amounts.',
+        est: newAmt(0), inv: newAmt(0), paid: newAmt(0),
+        status: 'Pending', dueDate: '', dateAdded: todayISO(),
+        attachment: { name:file.name, type:file.type, size:file.size, dataUrl:e.target.result, uploadedAt:new Date().toISOString() }
+      });
+      added++; pending--;
+      if(pending===0){
+        scheduleAutosave();
+        renderAll();
+        setStatus('Added '+added+' entr'+(added===1?'y':'ies')+' from uploaded files'+(skipped?' ('+skipped+' skipped — not PDF/JPG/PNG)':'')+' — review vendor, category, and amounts', 9000);
+      }
+    };
+    reader.readAsDataURL(file);
+  });
+  input.value='';
 }
 function removeAttachment(id){
   const entry = state.entries.find(x=>x.id===id);
