@@ -1,18 +1,18 @@
-# Mtn Brook Village Office — Project Finances
+# Mountain Brook Village Office — Project Finances
 
-A single-page finance report for the Mtn Brook Village office build. No backend required — it's a static site meant to be hosted on GitHub Pages. Built in the Carlisle Moore **Editorial** house style (rust/paper/forest palette, Columbia Titling / Aviano Sans / URW Antiqua / Franklin Gothic), laid out to match the Invoice 8348 cost-comparison sheet — a clean report, not a spreadsheet.
+A single-page finance report for the Mountain Brook Village office build. No backend required — it's a static site meant to be hosted on GitHub Pages. Built in the Carlisle Moore **Editorial** house style (rust/paper/forest palette, Columbia Titling / Aviano Sans / URW Antiqua / Franklin Gothic), laid out to match the Invoice 8348 cost-comparison sheet — a clean report, not a spreadsheet.
 
 ## Files
 
 - `index.html` — the app (open it directly, or host it)
-- `ledger-data.json` — the committed backup of your data. The app writes this file when you click **Save**; you then commit it to git so any other browser/device you open the app in can load the same starting data.
+- `ledger-data.json` — the committed backup of your data. Once GitHub Sync is connected (see below), the app writes this file straight to your repo itself — you don't need to download or commit anything by hand.
 - `assets/logo-wordmark.png`, `assets/house-mark.png` — brand assets used in the masthead. Keep them alongside `index.html`.
 
 ## How it's organized
 
 The page is three sections, one per vendor/contract, plus a project-wide overview at the top:
 
-**Overview** — a five-cell KPI band totaling all three vendors: Contract Value, Committed to Date, Paid to Date, Outstanding, and Due/Overdue (TCC invoices due within 30 days or already past due).
+**Overview** — a three-cell KPI band: Contract Value (with a TCC / GHT / Emory breakdown underneath), Paid to Date, and Due/Overdue (TCC invoices due within 30 days or already past due).
 
 **01 · TCC General Contractors** — the cost-plus-15%, Net-15 contract. A KPI band (Invoiced to Date, Cost to Date, Fee · 15%, Contract Total, % of Contract) mirrors Invoice 8348's cost-comparison header. Below it, a **Line-Item Comparison** table lists every category from the signed $580,302.64 contract with its Estimate, Billed to Date, and a Variance that only shows a number when a category is actually over budget or out of contract scope (everything still tracking normally just shows a dash — matching how the reference document reads). A **Contingency Exposure** note auto-computes from the flagged variances. Below that, an **Invoices** table tracks TCC's individual draws — invoice number, amount, due date, status — since they're addressed to Bill Moore for the firm, separate from the line-item budget tracking. TCC line items intentionally don't carry a paid/unpaid status — that lives at the invoice level instead.
 
@@ -30,12 +30,22 @@ Any Emory item's Amount field has an inline currency converter (pick a currency,
 
 ## How data storage works
 
-- **Automatic save** — every change is saved instantly to this browser's local database (IndexedDB). Close the tab, come back tomorrow, everything's still there.
-- **Save button** — exports the full dataset (including attached files) as `ledger-data.json`. This is your durable, git-tracked backup and the way to sync data to a different browser or computer. Click it after a work session, then commit the updated file.
-- **Load button** — manually load a `ledger-data.json` file, replacing what's in this browser.
+- **Automatic save** — every change is saved instantly to this browser's local database (IndexedDB), and — once GitHub Sync is connected — pushed straight to your repo a few seconds later too. Close the tab, come back tomorrow, everything's still there.
+- **Save button** — forces an immediate save: writes to this browser's local database right away (skipping the usual short debounce) and, if GitHub Sync is connected, pushes to GitHub immediately as well. Use it when you want to be sure something's landed before you close the laptop.
+- **Import — Check Dropbox Folder button** — scans your Cost Tracking Dropbox folder for anything not yet logged (see "Checking the Cost Tracking folder for new files" below).
 - **Auto-load from repo** — when the app is hosted over `https://` (e.g. GitHub Pages) and a browser's local database is empty, it automatically fetches `ledger-data.json` from the same folder and loads it. If the browser already has data and a newer repo file exists, you'll see a small "load it" link in the status strip instead of a silent overwrite.
 
 Because attachments are stored inline as base64, `ledger-data.json` can get large if you attach many big files — GitHub is fine with this at typical sizes, but keep an eye on it if you're attaching dozens of large scans.
+
+## GitHub Sync
+
+Under the Overview KPIs, the **GitHub Sync** panel pushes `ledger-data.json` directly to your GitHub repo — no downloading a file and committing it by hand.
+
+**Setup:** click **Configure GitHub Sync** and fill in your repo owner, repo name, branch (usually `main`), the file path (`ledger-data.json` by default), and a **fine-grained personal access token** scoped to just that one repo with **Contents: Read and write** permission — the same kind of token you'd generate under GitHub → Settings → Developer settings → Fine-grained tokens. Once saved, **Push to GitHub** and **Pull from GitHub** buttons appear.
+
+**What it does:** after that first setup, every edit autosaves to this browser as always, and a few seconds later also pushes to GitHub automatically. The **Save** button in the header does both immediately if you don't want to wait. **Pull from GitHub** fetches whatever is currently in the repo and loads it here (useful if you edited from another computer).
+
+**Where the token lives:** only in this browser's local database (IndexedDB) — it is never written into `index.html`, never included in the exported `ledger-data.json`, and is only ever sent over HTTPS to `api.github.com`. It won't end up committed to git history. Because a fine-grained token scoped to one repo has a small blast radius if it ever leaked, that's the right kind to use here — avoid a classic (account-wide) token. Click **disconnect** next to the connection status to remove it from this browser at any time. Note that anyone with access to this specific browser profile (dev tools, etc.) could read the stored token, so only set this up on a computer you trust.
 
 ## A few things worth a second look
 
@@ -47,7 +57,7 @@ Because attachments are stored inline as base64, `ledger-data.json` can get larg
 
 ## Checking the Cost Tracking folder for new files
 
-Under the Overview KPIs, **Check Folder for New Files** uses your browser's File System Access API to look directly at your local Cost Tracking folder — no server involved, nothing uploaded anywhere. The first click asks you to pick the folder once; after that it's a one-click permission re-confirmation. It compares filenames against everything already attached in the ledger and lists anything it doesn't recognize.
+The **Import — Check Dropbox Folder** button in the header (same engine as **Check Folder for New Files** under the Overview KPIs) uses your browser's File System Access API to look directly at your local Cost Tracking folder — no server involved, nothing uploaded anywhere. The first click asks you to pick the folder once; after that it's a one-click permission re-confirmation. It compares filenames against everything already attached in the ledger and lists anything it doesn't recognize.
 
 This only works in **Chrome or Edge** — Safari and Firefox don't support this API, and the button will tell you so if you click it there. It also only catches new *filenames* — it can't read dollar amounts out of a document. When it flags something new, copy the ledger manifest (button right next to it) and ask Claude to read the new file in with real numbers, the same way the current data was built.
 
@@ -56,7 +66,7 @@ This only works in **Chrome or Edge** — Safari and Firefox don't support this 
 1. Create (or reuse) a git repo in this folder and push it to GitHub.
 2. In the repo's Settings → Pages, set the source to your default branch (root).
 3. Visit the published URL — the app will auto-load `ledger-data.json` from the repo the first time you open it in a new browser.
-4. After changes, click **Save**, move the downloaded `ledger-data.json` into this folder (replacing the old one), then `git add`, `git commit`, `git push`.
+4. Set up **GitHub Sync** (above) with a fine-grained token for that repo, and every edit from then on pushes straight to `ledger-data.json` in the repo automatically — no manual commit needed.
 
 ## Dropbox completeness check
 

@@ -61,6 +61,9 @@ label.btn-secondary{display:inline-block}
 .kpi-val.forest{color:var(--forest)}
 .kpi-label{font-family:var(--display);font-weight:700;font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink);margin-top:10px}
 .kpi-note{font-family:var(--serif);font-style:italic;font-size:14px;color:var(--ink-soft);margin-top:3px}
+.kpi-breakdown{display:flex;gap:22px;flex-wrap:wrap;margin-top:11px}
+.kpi-breakdown span{font-family:var(--titling);font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-mute);display:block}
+.kpi-breakdown b{font-family:var(--sans-cond);font-weight:700;font-size:18px;color:var(--ink);display:block;margin-top:3px;letter-spacing:.01em}
 .kpi-5{grid-template-columns:repeat(5,1fr)}
 .kpi-4{grid-template-columns:repeat(4,1fr)}
 .kpi-3{grid-template-columns:repeat(3,1fr)}
@@ -189,38 +192,29 @@ label.btn-secondary{display:inline-block}
 <div class="wrap">
 
   <div class="save-strip">
-    <button class="btn btn-save" onclick="exportLedger()">Save — Export ledger-data.json</button>
-    <label class="btn btn-secondary">Load ledger-data.json<input type="file" accept=".json" style="display:none" onchange="importLedgerFile(this)"></label>
-    <button class="btn btn-secondary" onclick="clearAll()">Clear All</button>
+    <button class="btn btn-save" onclick="manualSave()">Save</button>
+    <button class="btn btn-secondary" onclick="importFromDropboxFolder()">Import — Check Dropbox Folder</button>
     <span class="spacer"></span>
     <span class="save-status" id="save-status"></span>
-    <div class="save-hint">Autosaves to this browser as you work &middot; use Save to export a file to commit to your GitHub repo &middot; when hosted on GitHub Pages the app auto-loads ledger-data.json on first visit</div>
+    <div class="save-hint">Autosaves to this browser after every change &middot; Save also pushes straight to GitHub once you've connected it below &middot; Import checks your Cost Tracking Dropbox folder for anything new</div>
   </div>
 
-  <div class="kpi kpi-5">
+  <div class="kpi kpi-3">
     <div class="kpi-cell">
       <div class="kpi-of">Contract Value</div>
       <div class="kpi-val tab" id="ov-contract">$0</div>
       <div class="kpi-label">All Vendors</div>
-      <div class="kpi-note">TCC + GHT + Emory</div>
-    </div>
-    <div class="kpi-cell">
-      <div class="kpi-of">Committed to Date</div>
-      <div class="kpi-val tab" id="ov-committed">$0</div>
-      <div class="kpi-label">Invoiced / Ordered</div>
-      <div class="kpi-note">across all three</div>
+      <div class="kpi-breakdown">
+        <span>TCC<b class="tab" id="ov-contract-tcc">$0</b></span>
+        <span>GHT<b class="tab" id="ov-contract-ght">$0</b></span>
+        <span>Emory<b class="tab" id="ov-contract-emory">$0</b></span>
+      </div>
     </div>
     <div class="kpi-cell">
       <div class="kpi-of">Paid to Date</div>
       <div class="kpi-val tab forest" id="ov-paid">$0</div>
       <div class="kpi-label">Disbursed</div>
       <div class="kpi-note">across all three</div>
-    </div>
-    <div class="kpi-cell">
-      <div class="kpi-of">Outstanding <span class="info" title="Committed to date minus paid to date">ⓘ</span></div>
-      <div class="kpi-val tab rust" id="ov-outstanding">$0</div>
-      <div class="kpi-label">Owed</div>
-      <div class="kpi-note">not yet disbursed</div>
     </div>
     <div class="kpi-cell">
       <div class="kpi-of">Due / Overdue <span class="info" title="TCC invoices due within 30 days, plus anything already past due">ⓘ</span></div>
@@ -237,6 +231,16 @@ label.btn-secondary{display:inline-block}
       <button class="btn btn-secondary" onclick="copyManifest()">Copy Ledger Manifest</button>
     </div>
     <div id="folder-check-result" style="display:none;margin-top:14px;padding-top:14px;border-top:1px solid var(--hairline)"></div>
+  </div>
+
+  <div class="panel" style="flex-direction:column;align-items:stretch">
+    <div style="display:flex;flex-wrap:wrap;align-items:center;gap:16px">
+      <span class="panel-txt"><strong>GitHub sync</strong> — push this ledger straight to your GitHub repo as ledger-data.json, no manual download/commit needed. Your token stays in this browser only (IndexedDB) — it's never written into index.html or the exported file.</span>
+      <button class="btn btn-secondary" onclick="openGithubSettingsModal()">Configure GitHub Sync</button>
+      <button class="btn btn-primary" id="btn-gh-push" onclick="pushToGithub()" style="display:none">Push to GitHub</button>
+      <button class="btn btn-secondary" id="btn-gh-pull" onclick="pullFromGithub()" style="display:none">Pull from GitHub</button>
+    </div>
+    <div id="gh-status" class="mfield-hint" style="margin-top:10px"></div>
   </div>
 
   <!-- ═══════════════════ TCC ═══════════════════ -->
@@ -452,7 +456,7 @@ label.btn-secondary{display:inline-block}
 /* ============================= CONFIG ============================= */
 // Bump this string on every delivered rebuild so it's obvious at a glance, in the
 // browser, whether you're looking at the file you think you're looking at.
-const APP_VERSION = 'Build 6 · Density & Typography Pass · 7.23.2026';
+const APP_VERSION = 'Build 7 · GitHub Sync & Overview Cleanup · 7.23.2026';
 const CURRENCIES = ['EUR','GBP','CAD','MXN','JPY','CNY','AUD','CHF','Other'];
 const DB_NAME='cma_finance_db_v2', DB_VERSION=1, STORE='ledger';
 const ATTACH_ACCEPT = 'application/pdf,image/jpeg,image/jpg,image/png';
@@ -552,9 +556,36 @@ function scheduleAutosave(){
   setStatus('Saving…', 0);
   clearTimeout(autosaveTimer);
   autosaveTimer = setTimeout(async ()=>{
-    try{ await dbSave(state); setStatus('Autosaved to browser · '+new Date().toLocaleTimeString()); }
+    try{ await dbSave(state); setStatus('Autosaved to browser · '+new Date().toLocaleTimeString()); scheduleGithubPush(); }
     catch(err){ setStatus('Autosave failed — your browser may be blocking local storage'); }
   }, 500);
+}
+// Manual "Save" button — saves to this browser immediately (skipping the debounce)
+// and, if GitHub sync is connected, pushes to GitHub immediately too.
+async function manualSave(){
+  clearTimeout(autosaveTimer);
+  setStatus('Saving…', 0);
+  try{
+    await dbSave(state);
+    setStatus('Saved to browser · '+new Date().toLocaleTimeString());
+  }catch(err){
+    setStatus('Save failed — your browser may be blocking local storage');
+    return;
+  }
+  if(githubConfig && githubConfig.token){
+    clearTimeout(githubPushTimer);
+    await pushToGithub(false);
+  }
+}
+// Save-strip "Import" button — scans the connected Cost Tracking Dropbox folder for
+// filenames not yet logged in the ledger (same engine as the panel below) and scrolls
+// the result into view.
+function importFromDropboxFolder(){
+  checkCostTrackingFolder();
+  setTimeout(()=>{
+    const panel = document.getElementById('folder-check-result');
+    if(panel) panel.scrollIntoView({behavior:'smooth', block:'center'});
+  }, 60);
 }
 function setStatus(msg, ms=6000){
   const st=document.getElementById('save-status');
@@ -566,7 +597,7 @@ function setStatus(msg, ms=6000){
 function isEmptyState(s){
   return !s || (s.tcc.lineItems.length===0 && s.tcc.invoices.length===0 && s.ght.items.length===0 && s.emory.items.length===0);
 }
-function exportLedger(){
+function buildExportPayload(){
   const payload = JSON.parse(JSON.stringify(state));
   payload._meta = {
     exported: new Date().toISOString(),
@@ -574,6 +605,12 @@ function exportLedger(){
     schema: 2,
     note: 'Commit this file as ledger-data.json alongside index.html in the GitHub repo. A browser with an empty local database will auto-load it on first visit.'
   };
+  return payload;
+}
+// Kept for programmatic/manual use even though the download-a-file button was removed
+// from the save-strip in favor of GitHub sync — still handy as a one-off local backup.
+function exportLedger(){
+  const payload = buildExportPayload();
   const blob = new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
@@ -756,6 +793,168 @@ async function checkCostTrackingFolder(){
   }catch(err){
     if(err.name==='AbortError'){ resultEl.style.display='none'; return; }
     resultEl.innerHTML = `<span style="font-family:var(--serif);font-style:italic;font-size:13px;color:var(--alert)">Couldn't check the folder (${esc(err.message||err.name)}). Use Copy Ledger Manifest instead.</span>`;
+  }
+}
+
+/* ============================= GITHUB SYNC =============================
+   Pushes/pulls ledger-data.json straight to a GitHub repo via the REST Contents API
+   (which supports CORS, so this works from a plain static page with no server in
+   between). The repo/branch/path and the fine-grained token are entered once via
+   the Configure modal and kept ONLY in this browser's IndexedDB — they are never
+   written into index.html or into the exported ledger-data.json, so the token can
+   never end up committed to git history. Use a fine-grained PAT scoped to just this
+   one repo with Contents: Read and write, nothing broader. */
+const GITHUB_CONFIG_KEY = 'githubConfig';
+let githubConfig = null;
+let githubPushTimer = null;
+
+async function dbSaveGithubConfig(cfg){
+  const db = await openDB();
+  return new Promise((resolve,reject)=>{
+    const tx = db.transaction(STORE,'readwrite');
+    tx.objectStore(STORE).put(cfg, GITHUB_CONFIG_KEY);
+    tx.oncomplete = ()=>resolve();
+    tx.onerror = ()=>reject(tx.error);
+  });
+}
+async function dbLoadGithubConfig(){
+  const db = await openDB();
+  return new Promise((resolve,reject)=>{
+    const tx = db.transaction(STORE,'readonly');
+    const req = tx.objectStore(STORE).get(GITHUB_CONFIG_KEY);
+    req.onsuccess = ()=>resolve(req.result||null);
+    req.onerror = ()=>reject(req.error);
+  });
+}
+async function dbClearGithubConfig(){
+  const db = await openDB();
+  return new Promise((resolve,reject)=>{
+    const tx = db.transaction(STORE,'readwrite');
+    tx.objectStore(STORE).delete(GITHUB_CONFIG_KEY);
+    tx.oncomplete = ()=>resolve();
+    tx.onerror = ()=>reject(tx.error);
+  });
+}
+// Uses the browser's own base64 encoder (via Blob + FileReader) rather than
+// btoa/encodeURIComponent tricks — handles the multi-MB ledger file reliably.
+function toBase64(str){
+  return new Promise((resolve,reject)=>{
+    const reader = new FileReader();
+    reader.onload = ()=>resolve(reader.result.split(',')[1]);
+    reader.onerror = reject;
+    reader.readAsDataURL(new Blob([str]));
+  });
+}
+function updateGithubUI(){
+  const configured = !!(githubConfig && githubConfig.owner && githubConfig.repo && githubConfig.token);
+  const pushBtn = document.getElementById('btn-gh-push'), pullBtn = document.getElementById('btn-gh-pull');
+  if(pushBtn) pushBtn.style.display = configured ? '' : 'none';
+  if(pullBtn) pullBtn.style.display = configured ? '' : 'none';
+  const statusEl = document.getElementById('gh-status');
+  if(!statusEl) return;
+  if(configured){
+    statusEl.innerHTML = `Connected to <strong style="font-style:normal">${esc(githubConfig.owner)}/${esc(githubConfig.repo)}</strong> @ ${esc(githubConfig.branch||'main')} · <span class="edit-link" onclick="openGithubSettingsModal()">edit</span> · <span class="del-link" onclick="disconnectGithub()">disconnect</span>` + (githubConfig.lastSynced ? ` · last synced ${new Date(githubConfig.lastSynced).toLocaleString()}` : ' · not yet synced');
+  } else {
+    statusEl.textContent = 'Not connected — click Configure GitHub Sync to add your repo and a fine-grained token (Contents: Read and write).';
+  }
+}
+async function disconnectGithub(){
+  if(!confirm('Remove the stored GitHub token and repo settings from this browser?')) return;
+  await dbClearGithubConfig();
+  githubConfig = null;
+  clearTimeout(githubPushTimer);
+  updateGithubUI();
+  setStatus('GitHub sync disconnected');
+}
+function openGithubSettingsModal(){
+  modalCtx = { kind:'github-settings' };
+  document.getElementById('modal-title').textContent = 'Configure GitHub Sync';
+  const c = githubConfig || {};
+  document.getElementById('modal-body').innerHTML = `
+    <div class="mrow">
+      <div class="mfield"><label>Repo Owner</label><input type="text" id="gh-owner" value="${esc(c.owner||'')}" placeholder="e.g. tscarlisle"></div>
+      <div class="mfield"><label>Repo Name</label><input type="text" id="gh-repo" value="${esc(c.repo||'')}" placeholder="e.g. mtn-brook-finance"></div>
+    </div>
+    <div class="mrow">
+      <div class="mfield"><label>Branch</label><input type="text" id="gh-branch" value="${esc(c.branch||'main')}"></div>
+      <div class="mfield"><label>File Path</label><input type="text" id="gh-path" value="${esc(c.path||'ledger-data.json')}"></div>
+    </div>
+    <div class="mfield"><label>Personal Access Token</label><input type="password" id="gh-token" value="${esc(c.token||'')}" placeholder="fine-grained token, Contents: Read and write"></div>
+    <div class="mfield-hint">Stays only in this browser (IndexedDB) — never written into index.html or ledger-data.json, and never sent anywhere but api.github.com. Use a fine-grained token scoped to just this one repo, like the one you already made.</div>
+  `;
+  document.getElementById('modal-overlay').classList.add('open');
+}
+async function githubRequest(path, opts={}){
+  return fetch(`https://api.github.com/repos/${encodeURIComponent(githubConfig.owner)}/${encodeURIComponent(githubConfig.repo)}${path}`, {
+    ...opts,
+    headers: {
+      'Authorization': 'Bearer '+githubConfig.token,
+      'Accept': 'application/vnd.github+json',
+      'X-GitHub-Api-Version': '2022-11-28',
+      ...(opts.headers||{})
+    }
+  });
+}
+async function pushToGithub(auto){
+  if(!githubConfig || !githubConfig.token){ if(!auto) alert('Configure GitHub Sync first.'); return; }
+  if(!auto) setStatus('Pushing to GitHub…', 0);
+  try{
+    let sha = null;
+    const getRes = await githubRequest(`/contents/${encodeURIComponent(githubConfig.path)}?ref=${encodeURIComponent(githubConfig.branch||'main')}`);
+    if(getRes.ok){
+      const meta = await getRes.json();
+      sha = meta.sha;
+    } else if(getRes.status !== 404){
+      throw new Error('checking the existing file returned '+getRes.status);
+    }
+    const content = await toBase64(JSON.stringify(buildExportPayload(), null, 2));
+    const putRes = await githubRequest(`/contents/${encodeURIComponent(githubConfig.path)}`, {
+      method: 'PUT',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({
+        message: 'Update ledger data — '+new Date().toLocaleString(),
+        content,
+        branch: githubConfig.branch || 'main',
+        ...(sha?{sha}:{})
+      })
+    });
+    if(!putRes.ok){
+      if(putRes.status===409) throw new Error('conflict — the file on GitHub changed since the last sync; click Push to GitHub again to retry');
+      if(putRes.status===401 || putRes.status===403) throw new Error('token rejected — check it has Contents: Read and write access to this repo');
+      if(putRes.status===404) throw new Error('repo or branch not found — check the owner/repo/branch in Configure GitHub Sync');
+      const err = await putRes.json().catch(()=>({}));
+      throw new Error(err.message || ('GitHub returned '+putRes.status));
+    }
+    githubConfig.lastSynced = new Date().toISOString();
+    await dbSaveGithubConfig(githubConfig);
+    updateGithubUI();
+    setStatus('Pushed to GitHub · '+new Date().toLocaleTimeString());
+  }catch(err){
+    setStatus('GitHub push failed — '+err.message, 12000);
+  }
+}
+function scheduleGithubPush(){
+  if(!githubConfig || !githubConfig.token) return;
+  clearTimeout(githubPushTimer);
+  githubPushTimer = setTimeout(()=>pushToGithub(true), 3000);
+}
+async function pullFromGithub(){
+  if(!githubConfig || !githubConfig.token){ alert('Configure GitHub Sync first.'); return; }
+  try{
+    setStatus('Pulling from GitHub…', 0);
+    const res = await githubRequest(`/contents/${encodeURIComponent(githubConfig.path)}?ref=${encodeURIComponent(githubConfig.branch||'main')}`, {
+      headers: { 'Accept':'application/vnd.github.raw+json' }
+    });
+    if(!res.ok) throw new Error('GitHub returned '+res.status);
+    const data = await res.json();
+    if(!data.tcc) throw new Error('that file did not look like a valid ledger-data.json');
+    if(!confirm('Load the version currently on GitHub? This replaces your local data in this browser.')) return;
+    state = data;
+    scheduleAutosave();
+    renderAll();
+    setStatus('Loaded latest from GitHub');
+  }catch(err){
+    setStatus('GitHub pull failed — '+err.message, 12000);
   }
 }
 
@@ -954,6 +1153,23 @@ function attachmentFieldHTML(item){
 
 async function saveModal(){
   const { kind, id } = modalCtx;
+  if(kind==='github-settings'){
+    const cfg = {
+      owner: document.getElementById('gh-owner').value.trim(),
+      repo: document.getElementById('gh-repo').value.trim(),
+      branch: document.getElementById('gh-branch').value.trim() || 'main',
+      path: document.getElementById('gh-path').value.trim() || 'ledger-data.json',
+      token: document.getElementById('gh-token').value.trim(),
+      lastSynced: githubConfig ? githubConfig.lastSynced : null
+    };
+    if(!cfg.owner || !cfg.repo || !cfg.token){ alert('Owner, repo, and token are all required.'); return; }
+    githubConfig = cfg;
+    await dbSaveGithubConfig(cfg);
+    updateGithubUI();
+    closeModal();
+    setStatus('GitHub sync configured');
+    return;
+  }
   const fileInput = document.getElementById('m-attachment');
   const removeAtt = document.getElementById('m-remove-att') && document.getElementById('m-remove-att').value==='1';
   let newAttachment = undefined;
@@ -1231,17 +1447,10 @@ function renderOverview(){
   const emoryEst = state.emory.contractEstimate;
   const contract = tccContract + ghtEst + emoryEst;
 
-  const tccCommitted = tccCostToDate() + tccFee();
-  const ghtCommitted = state.ght.items.reduce((s,x)=>s+num(x.billedToDate),0);
-  const emoryCommitted = state.emory.items.reduce((s,x)=>s+num(x.amount),0);
-  const committed = tccCommitted + ghtCommitted + emoryCommitted;
-
   const tccPaid = state.tcc.invoices.reduce((s,x)=>s+num(x.paidAmount),0);
   const ghtPaid = 0;
   const emoryPaid = state.emory.items.reduce((s,x)=>s+num(x.paidAmount),0);
   const paid = tccPaid + ghtPaid + emoryPaid;
-
-  const outstanding = Math.max(committed-paid,0);
 
   let due=0, dueN=0;
   const now = new Date(new Date().toDateString());
@@ -1254,9 +1463,10 @@ function renderOverview(){
   });
 
   document.getElementById('ov-contract').textContent = fmtUSD(contract);
-  document.getElementById('ov-committed').textContent = fmtUSD(committed);
+  document.getElementById('ov-contract-tcc').textContent = fmtUSD(tccContract);
+  document.getElementById('ov-contract-ght').textContent = fmtUSD(ghtEst);
+  document.getElementById('ov-contract-emory').textContent = fmtUSD(emoryEst);
   document.getElementById('ov-paid').textContent = fmtUSD(paid);
-  document.getElementById('ov-outstanding').textContent = fmtUSD(outstanding);
   document.getElementById('ov-due').textContent = fmtUSD(due);
   document.getElementById('ov-due-count').textContent = dueN + (dueN===1?' Invoice':' Invoices');
 }
@@ -1288,6 +1498,8 @@ function copyManifest(){
 (async function init(){
   try{ state = await dbLoad(); }catch(err){ state = null; }
   if(!state) state = emptyState();
+  try{ githubConfig = await dbLoadGithubConfig(); }catch(err){ githubConfig = null; }
+  updateGithubUI();
   renderAll();
   autoLoadFromRepo();
 })();
