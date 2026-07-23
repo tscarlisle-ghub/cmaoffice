@@ -70,6 +70,7 @@ label.btn-secondary{display:inline-block}
 .kpi-5{grid-template-columns:repeat(5,1fr)}
 .kpi-4{grid-template-columns:repeat(4,1fr)}
 .kpi-3{grid-template-columns:repeat(3,1fr)}
+.kpi-2{grid-template-columns:repeat(2,1fr)}
 @media (max-width:900px){.kpi-5,.kpi-4{grid-template-columns:repeat(2,1fr)}.kpi-cell:nth-child(odd){border-left:none}}
 
 /* ═══ PANEL ═══ */
@@ -426,6 +427,48 @@ label.btn-secondary{display:inline-block}
     </div>
   </div>
 
+  <!-- ═══════════════════ MISCELLANEOUS ═══════════════════ -->
+  <div class="plate">
+    <div class="plate-side">
+      <div class="plate-num">04</div>
+      <div class="plate-kicker">Direct Payments</div>
+      <div class="plate-rule"></div>
+      <div class="plate-label">Miscellaneous<br>Expenses</div>
+      <div class="plate-note">Moving expenses and other one-off costs paid directly, outside TCC, GHT, and Emory.</div>
+    </div>
+    <div>
+      <div class="kpi kpi-2" style="margin-top:0">
+        <div class="kpi-cell">
+          <div class="kpi-of">Total Logged</div>
+          <div class="kpi-val tab" id="misc-total">$0</div>
+          <div class="kpi-label">All Entries</div>
+          <div class="kpi-note">direct expenses</div>
+        </div>
+        <div class="kpi-cell">
+          <div class="kpi-of">Paid to Date</div>
+          <div class="kpi-val tab forest" id="misc-paid">$0</div>
+          <div class="kpi-label">Disbursed</div>
+          <div class="kpi-note">confirmed payments</div>
+        </div>
+      </div>
+
+      <table class="rtable" style="margin-top:32px">
+        <thead><tr>
+          <th>Paid To</th>
+          <th>Description</th>
+          <th class="num">Amount</th>
+          <th style="text-align:center">Paid</th>
+          <th>Status</th>
+          <th>Attachment</th>
+          <th></th>
+        </tr></thead>
+        <tbody id="misc-body"></tbody>
+      </table>
+
+      <div class="add-row"><button class="btn btn-secondary btn-sm" onclick="openMiscModal()">+ Add Expense</button></div>
+    </div>
+  </div>
+
   <!-- ═══════════════════ SETTINGS ═══════════════════ -->
   <div class="plate">
     <div class="plate-side">
@@ -446,7 +489,7 @@ label.btn-secondary{display:inline-block}
         <div class="mfield"><label>File Path</label><input type="text" id="gh-path" value="ledger-data.json"></div>
       </div>
       <div class="mfield"><label>Personal Access Token</label><input type="text" id="gh-token" placeholder="fine-grained token, Contents: Read and write" style="font-family:var(--sans-cond);letter-spacing:.01em"></div>
-      <div class="mfield-hint">Stays only in this browser (IndexedDB) — never written into index.html or ledger-data.json, and never sent anywhere but api.github.com. Use a fine-grained token scoped to just this one repo, like the one you already made.</div>
+      <div class="mfield-hint">Stays only in this browser (IndexedDB) — never written into index.html or ledger-data.json, and never sent anywhere but api.github.com. Use a fine-grained token scoped to just this one repo, like the one you already made. Need a new one? <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">Generate one on GitHub</a> — scope it to this repo only, with Contents: Read and write.</div>
 
       <div class="add-row">
         <button class="btn btn-save" onclick="saveGithubSettings()">Save GitHub Settings</button>
@@ -456,6 +499,23 @@ label.btn-secondary{display:inline-block}
       </div>
       <div id="gh-test-result" class="mfield-hint"></div>
       <div id="gh-status" class="mfield-hint" style="margin-top:4px"></div>
+
+      <div class="section-h" style="margin-top:44px"><span class="rust">Share This Setup</span>Get your partner connected to the same ledger without them retyping five fields by hand.</div>
+      <div class="add-row">
+        <button class="btn btn-save" onclick="copyOneClickLink()">Copy 1-Click Link for Partner</button>
+        <button class="btn btn-secondary" onclick="copySetupForPartner()">Copy Setup as Text Instead</button>
+        <button class="btn btn-secondary" onclick="toggleImportSetup()">Paste a Setup They Sent You</button>
+      </div>
+      <div id="gh-link-result" class="mfield-hint"></div>
+      <div id="gh-copy-result" class="mfield-hint"></div>
+      <div id="import-setup-wrap" style="display:none;margin-top:14px">
+        <div class="mfield"><label>Pasted Setup</label><textarea id="gh-paste-setup" rows="6" placeholder="Paste the block your partner sent you here"></textarea></div>
+        <div class="add-row">
+          <button class="btn btn-secondary btn-sm" onclick="applyPastedSetup()">Fill In Fields Above</button>
+        </div>
+        <div id="gh-paste-result" class="mfield-hint"></div>
+      </div>
+      <div class="mfield-hint" style="margin-top:10px">The link and the text block both carry the token in plain sight, so send either one somewhere reasonably private (Messages, a password manager, in person) rather than posting it anywhere public. Opening the link fills everything in and connects automatically — no Save button needed.</div>
 
       <div class="section-h" style="margin-top:44px"><span class="rust">Cost Tracking Folder</span>Compare your local Dropbox folder against everything already logged in the ledger above.</div>
       <div class="add-row">
@@ -498,7 +558,7 @@ label.btn-secondary{display:inline-block}
 /* ============================= CONFIG ============================= */
 // Bump this string on every delivered rebuild so it's obvious at a glance, in the
 // browser, whether you're looking at the file you think you're looking at.
-const APP_VERSION = 'Build 14 · Import Queue & Favicon · 7.23.2026';
+const APP_VERSION = 'Build 17 · 1-Click Partner Link · 7.23.2026';
 const CURRENCIES = ['EUR','GBP','CAD','MXN','JPY','CNY','AUD','CHF','Other'];
 const DB_NAME='cma_finance_db_v2', DB_VERSION=1, STORE='ledger';
 const ATTACH_ACCEPT = 'application/pdf,image/jpeg,image/jpg,image/png';
@@ -513,19 +573,22 @@ function emptyState(){
     tcc:{ vendor:'TCC General Contractors', terms:'Cost-Plus 15% · Net 15', contractTotal:0, contractDate:'', feePct:0.15, lineItems:[], invoices:[] },
     ght:{ vendor:'GHT Group', items:[] },
     emory:{ vendor:'Emory Ratliff Interiors', contractEstimate:0, contractNote:'', items:[] },
+    misc:{ items:[] },
     pendingImports:[]
   };
 }
 
 function normalizeState(s){
   if(s && !s.pendingImports) s.pendingImports = [];
+  if(s && !s.misc) s.misc = { items:[] };
   return s;
 }
 
 const VENDOR_META = {
   tcc: { label:'TCC General Contractors', short:'TCC' },
   ght: { label:'GHT Group', short:'GHT' },
-  emory: { label:'Emory Ratliff Interiors', short:'Emory' }
+  emory: { label:'Emory Ratliff Interiors', short:'Emory' },
+  misc: { label:'Miscellaneous Expenses', short:'Misc' }
 };
 
 document.getElementById('today-meta').textContent = 'Viewed ' + new Date().toLocaleDateString('en-US',{month:'numeric',day:'numeric',year:'numeric'});
@@ -818,6 +881,7 @@ function allLoggedAttachmentNames(){
   state.tcc.invoices.forEach(x=>x.attachment && names.push(x.attachment.name));
   state.ght.items.forEach(x=>x.attachment && names.push(x.attachment.name));
   state.emory.items.forEach(x=>x.attachment && names.push(x.attachment.name));
+  state.misc.items.forEach(x=>x.attachment && names.push(x.attachment.name));
   return names.map(n=>n.toLowerCase());
 }
 function looksLogged(filename, loggedNames){
@@ -966,10 +1030,35 @@ async function saveGithubSettings(){
     lastSynced: githubConfig ? githubConfig.lastSynced : null
   };
   if(!cfg.owner || !cfg.repo || !cfg.token){ alert('Owner, repo, and token are all required.'); return; }
+  await applyGithubConfig(cfg);
+  setStatus('GitHub sync configured');
+}
+async function applyGithubConfig(cfg){
   githubConfig = cfg;
   await dbSaveGithubConfig(cfg);
   updateGithubUI();
-  setStatus('GitHub sync configured');
+}
+// Detects a ?ghsetup=<base64> param from a 1-click share link (see copyOneClickLink),
+// decodes and applies it, then scrubs the token back out of the visible URL/history.
+async function applyOneClickLinkIfPresent(){
+  const params = new URLSearchParams(location.search);
+  const encoded = params.get('ghsetup');
+  if(!encoded) return;
+  try{
+    const payload = decodeURIComponent(escape(atob(encoded)));
+    const cfg = JSON.parse(payload);
+    if(cfg && cfg.owner && cfg.repo && cfg.token){
+      cfg.branch = cfg.branch || 'main';
+      cfg.path = cfg.path || 'ledger-data.json';
+      cfg.lastSynced = null;
+      await applyGithubConfig(cfg);
+      setStatus('Connected via shared link — ' + cfg.owner + '/' + cfg.repo, 8000);
+    }
+  }catch(err){
+    setStatus('Could not read that setup link — ask for a fresh one', 8000);
+  }
+  // Strip the token out of the address bar/history either way.
+  history.replaceState(null, '', location.origin + location.pathname + location.hash);
 }
 async function testGithubConnection(){
   const owner = document.getElementById('gh-owner').value.trim();
@@ -1010,6 +1099,101 @@ async function testGithubConnection(){
     resultEl.style.color = 'var(--alert)';
   }
 }
+
+/* ============================= SHARE SETUP ============================= */
+// Bundles the current GitHub Sync fields into a plain-text block someone else can
+// paste into their own copy of this app (via "Paste a Setup They Sent You" below)
+// instead of retyping owner/repo/branch/path/token one field at a time.
+function copySetupForPartner(){
+  const owner = document.getElementById('gh-owner').value.trim();
+  const repo = document.getElementById('gh-repo').value.trim();
+  const branch = document.getElementById('gh-branch').value.trim() || 'main';
+  const path = document.getElementById('gh-path').value.trim() || 'ledger-data.json';
+  const token = document.getElementById('gh-token').value.trim();
+  const resultEl = document.getElementById('gh-copy-result');
+  if(!owner || !repo || !token){
+    resultEl.textContent = 'Fill in and save your own GitHub Sync settings first — there\'s nothing to share yet.';
+    resultEl.style.color = 'var(--alert)';
+    return;
+  }
+  const text = `Mountain Brook Village Office — GitHub Sync setup
+Repo Owner: ${owner}
+Repo Name: ${repo}
+Branch: ${branch}
+File Path: ${path}
+Token: ${token}
+
+In the app: Settings → Share This Setup → Paste a Setup They Sent You → paste this in → Fill In Fields Above → Save GitHub Settings.`;
+  navigator.clipboard.writeText(text).then(()=>{
+    resultEl.textContent = 'Copied — send it somewhere reasonably private (Messages, a password manager, in person), not anywhere public.';
+    resultEl.style.color = 'var(--forest)';
+  }).catch(()=>{
+    resultEl.textContent = 'Could not copy automatically — select and copy the fields above by hand instead.';
+    resultEl.style.color = 'var(--alert)';
+  });
+}
+// Same five fields as copySetupForPartner, but base64'd into a URL query param so
+// opening the link auto-fills and auto-connects GitHub Sync with zero typing or pasting.
+function copyOneClickLink(){
+  const owner = document.getElementById('gh-owner').value.trim();
+  const repo = document.getElementById('gh-repo').value.trim();
+  const branch = document.getElementById('gh-branch').value.trim() || 'main';
+  const path = document.getElementById('gh-path').value.trim() || 'ledger-data.json';
+  const token = document.getElementById('gh-token').value.trim();
+  const resultEl = document.getElementById('gh-link-result');
+  if(!owner || !repo || !token){
+    resultEl.textContent = 'Fill in and save your own GitHub Sync settings first — there\'s nothing to share yet.';
+    resultEl.style.color = 'var(--alert)';
+    return;
+  }
+  let encoded;
+  try{
+    encoded = btoa(unescape(encodeURIComponent(JSON.stringify({owner, repo, branch, path, token}))));
+  }catch(err){
+    resultEl.textContent = 'Could not build the link — try "Copy Setup as Text Instead" below.';
+    resultEl.style.color = 'var(--alert)';
+    return;
+  }
+  const url = location.origin + location.pathname + '?ghsetup=' + encoded;
+  navigator.clipboard.writeText(url).then(()=>{
+    resultEl.innerHTML = 'Link copied — whoever opens it gets GitHub Sync connected automatically, no typing required. Send it somewhere reasonably private (Messages, a password manager, in person), not anywhere public — the token rides along inside it.';
+    resultEl.style.color = 'var(--forest)';
+  }).catch(()=>{
+    resultEl.textContent = 'Could not copy automatically — select and copy: ' + url;
+    resultEl.style.color = 'var(--alert)';
+  });
+}
+function toggleImportSetup(){
+  const wrap = document.getElementById('import-setup-wrap');
+  wrap.style.display = wrap.style.display==='none' ? '' : 'none';
+}
+function applyPastedSetup(){
+  const raw = document.getElementById('gh-paste-setup').value;
+  const resultEl = document.getElementById('gh-paste-result');
+  if(!raw.trim()){ resultEl.textContent = 'Paste a setup block first.'; resultEl.style.color = 'var(--alert)'; return; }
+  const field = (label) => {
+    const m = raw.match(new RegExp(label + '\\s*:\\s*(.+)', 'i'));
+    return m ? m[1].trim() : '';
+  };
+  const owner = field('Repo Owner');
+  const repo = field('Repo Name');
+  const branch = field('Branch');
+  const path = field('File Path');
+  const token = field('Token');
+  if(!owner || !repo || !token){
+    resultEl.textContent = 'Couldn\'t find owner, repo, and token in that text — make sure you pasted the whole block.';
+    resultEl.style.color = 'var(--alert)';
+    return;
+  }
+  document.getElementById('gh-owner').value = owner;
+  document.getElementById('gh-repo').value = repo;
+  document.getElementById('gh-branch').value = branch || 'main';
+  document.getElementById('gh-path').value = path || 'ledger-data.json';
+  document.getElementById('gh-token').value = token;
+  resultEl.textContent = 'Fields filled in below — click Save GitHub Settings to connect.';
+  resultEl.style.color = 'var(--forest)';
+}
+
 async function githubRequest(path, opts={}){
   return fetch(`https://api.github.com/repos/${encodeURIComponent(githubConfig.owner)}/${encodeURIComponent(githubConfig.repo)}${path}`, {
     ...opts,
@@ -1141,7 +1325,8 @@ function applyImportChanges(id){
     'tcc-li': state.tcc.lineItems,
     'tcc-inv': state.tcc.invoices,
     'ght': state.ght.items,
-    'emory': state.emory.items
+    'emory': state.emory.items,
+    'misc': state.misc.items
   };
   if(p.action==='update'){
     const arr = targetArrays[p.targetType];
@@ -1235,6 +1420,19 @@ function toggleEmoryPaid(id){
   const amt = num(item.amount);
   const full = amt>0 && num(item.paidAmount) >= amt-0.005;
   item.paidAmount = full ? 0 : amt;
+  scheduleAutosave();
+  renderAll();
+}
+
+function findMisc(id){ return state.misc.items.find(x=>x.id===id); }
+function deleteMisc(id){ if(!confirm('Delete this expense?')) return; state.misc.items = state.misc.items.filter(x=>x.id!==id); scheduleAutosave(); renderAll(); }
+function toggleMiscPaid(id){
+  const item = findMisc(id);
+  if(!item) return;
+  const amt = num(item.amount);
+  const full = amt>0 && num(item.paidAmount) >= amt-0.005;
+  item.paidAmount = full ? 0 : amt;
+  if(full){ if(item.status==='Paid') item.status = 'Unpaid'; } else { item.status = 'Paid'; }
   scheduleAutosave();
   renderAll();
 }
@@ -1369,6 +1567,33 @@ function openEmoryModal(id){
   document.getElementById('modal-overlay').classList.add('open');
 }
 
+function openMiscModal(id){
+  const item = id ? findMisc(id) : null;
+  modalCtx = { kind:'misc', id };
+  document.getElementById('modal-title').textContent = id ? 'Edit Expense' : 'Add Miscellaneous Expense';
+  document.getElementById('modal-body').innerHTML = `
+    <div class="mrow">
+      <div class="mfield"><label>Paid To</label><input type="text" id="m-payee" value="${esc(item?item.payee:'')}" placeholder="e.g. Two Men and a Truck"></div>
+      <div class="mfield"><label>Date</label><input type="date" id="m-date" value="${item?item.date:todayISO()}"></div>
+    </div>
+    <div class="mfield"><label>Description</label><input type="text" id="m-description" value="${esc(item?item.description:'')}" placeholder="What this expense was for"></div>
+    <div class="mrow">
+      <div class="mfield"><label>Amount (USD)</label><input type="text" inputmode="decimal" oninput="formatMoneyLive(this)" id="m-amount" value="${item?moneyVal(item.amount):''}" placeholder="0"></div>
+      <div class="mfield"><label>Paid Amount (USD)</label><input type="text" inputmode="decimal" oninput="formatMoneyLive(this)" id="m-paidamount" value="${moneyVal(item?item.paidAmount:0)}" placeholder="0"></div>
+    </div>
+    <div class="mfield"><label>Status</label>
+      <select id="m-status">
+        <option ${item&&item.status==='Paid'?'selected':''}>Paid</option>
+        <option ${!item||item.status==='Unpaid'?'selected':''}>Unpaid</option>
+        <option ${item&&item.status==='Reimbursement Pending'?'selected':''}>Reimbursement Pending</option>
+      </select>
+    </div>
+    <div class="mfield"><label>Notes</label><textarea id="m-notes">${esc(item?item.notes:'')}</textarea></div>
+    <div class="mfield"><label>Attachment</label>${attachmentFieldHTML(item)}</div>
+  `;
+  document.getElementById('modal-overlay').classList.add('open');
+}
+
 async function convertModalAmount(){
   const cur = document.getElementById('m-fx-cur').value;
   const amt = num(document.getElementById('m-fx-amt').value);
@@ -1392,6 +1617,7 @@ function openImportModal(){
         <option value="tcc">TCC General Contractors</option>
         <option value="ght">GHT Group</option>
         <option value="emory">Emory Ratliff Interiors</option>
+        <option value="misc">Miscellaneous Expenses</option>
       </select>
     </div>
     <div class="mfield"><label>File <span style="font-weight:400;text-transform:none;letter-spacing:0">(PDF, JPG, or PNG)</span></label>
@@ -1499,6 +1725,21 @@ async function saveModal(){
     };
     if(newAttachment !== undefined) rec.attachment = newAttachment;
     if(id){ Object.assign(findEmory(id), rec); } else { state.emory.items.push(rec); }
+  }
+  else if(kind==='misc'){
+    const rec = {
+      id: id || uuid(),
+      payee: document.getElementById('m-payee').value.trim() || 'Unknown',
+      description: document.getElementById('m-description').value.trim(),
+      amount: num(document.getElementById('m-amount').value),
+      paidAmount: num(document.getElementById('m-paidamount').value),
+      status: document.getElementById('m-status').value,
+      date: document.getElementById('m-date').value,
+      notes: document.getElementById('m-notes').value,
+      attachment: id ? (findMisc(id).attachment) : null
+    };
+    if(newAttachment !== undefined) rec.attachment = newAttachment;
+    if(id){ Object.assign(findMisc(id), rec); } else { state.misc.items.push(rec); }
   }
   else if(kind==='import'){
     if(!newAttachment){ alert('Choose a file to import.'); return; }
@@ -1747,6 +1988,49 @@ function renderEmory(){
   document.getElementById('em-uninvoiced').textContent = fmtUSD(uninvoiced);
 }
 
+/* ============================= RENDER: MISCELLANEOUS ============================= */
+function renderMisc(){
+  const body = document.getElementById('misc-body');
+  const rows = state.misc.items;
+  if(!rows.length){
+    body.innerHTML = `<tr><td colspan="7"><div class="empty-state"><span>No miscellaneous expenses logged yet.</span></div></td></tr>`;
+  } else {
+    body.innerHTML = rows.map(item=>{
+      const pending = item.status==='Reimbursement Pending';
+      const tagClass = item.status==='Paid' ? 'forest' : (pending ? 'gold' : 'mute');
+      const attHTML = item.attachment ? `<span class="att-link" onclick='viewAttachmentObj(${JSON.stringify(item.attachment).replace(/'/g,"&#39;")})'>View</span>` : '—';
+      const paidAmt = num(item.paidAmount), amt = num(item.amount);
+      const full = amt>0 && paidAmt>=amt-0.005;
+      const partial = paidAmt>0.005 && !full;
+      const boxClass = full ? 'checked' : (partial ? 'partial' : '');
+      const paidCell = `<span class="paid-check" onclick="toggleMiscPaid('${item.id}')" title="${full?'Paid in full — click to mark unpaid':(partial?'Partially paid — click to mark paid in full':'Not paid — click to mark paid in full')}">
+          <span class="paid-box ${boxClass}"></span>
+          <span class="paid-amt">${paidAmt>0?fmtUSD(paidAmt):''}</span>
+        </span>`;
+      return `<tr>
+        <td class="cat">${esc(item.payee)}</td>
+        <td class="status">${esc(item.description)}${item.notes?`<br><span style="font-size:11.5px">${esc(item.notes)}</span>`:''}</td>
+        <td class="num tab">${fmtUSD(item.amount)}</td>
+        <td style="text-align:center">${paidCell}</td>
+        <td><span class="status-tag ${tagClass}">${esc(item.status)}</span>${item.date?`<br><span class="est-label">${fmtDate(item.date)}</span>`:''}</td>
+        <td class="att-cell">${attHTML}</td>
+        <td class="actions-cell"><span class="edit-link" onclick="openMiscModal('${item.id}')">edit</span><span class="del-link" onclick="deleteMisc('${item.id}')">delete</span></td>
+      </tr>`;
+    }).join('');
+  }
+  const total = state.misc.items.reduce((s,x)=>s+num(x.amount),0);
+  const paid = state.misc.items.reduce((s,x)=>s+num(x.paidAmount),0);
+  body.innerHTML += `<tr class="total-row">
+    <td class="total-label">Total</td>
+    <td></td>
+    <td class="num total-val">${fmtUSD(total)}</td>
+    <td class="num total-val forest" style="text-align:center">${fmtUSD(paid)}</td>
+    <td></td><td></td><td></td>
+  </tr>`;
+  document.getElementById('misc-total').textContent = fmtUSD(total);
+  document.getElementById('misc-paid').textContent = fmtUSD(paid);
+}
+
 /* ============================= RENDER: OVERVIEW ============================= */
 function renderOverview(){
   const tccContract = state.tcc.contractTotal || state.tcc.lineItems.reduce((s,x)=>s+(x.estimate||0),0);
@@ -1773,6 +2057,7 @@ function renderAll(){
   renderTcc();
   renderGht();
   renderEmory();
+  renderMisc();
   renderOverview();
   renderPendingImports();
 }
@@ -1783,7 +2068,8 @@ function copyManifest(){
     tcc: state.tcc.lineItems.map(x=>({section:x.section,category:x.category,estimate:x.estimate,estimateLabel:x.estimateLabel,billedToDate:x.billedToDate,attachment:x.attachment?x.attachment.name:null})),
     tccInvoices: state.tcc.invoices.map(x=>({number:x.number,amount:x.amount,attachment:x.attachment?x.attachment.name:null})),
     ght: state.ght.items.map(x=>({name:x.name,estimate:x.estimate,billedToDate:x.billedToDate,attachment:x.attachment?x.attachment.name:null})),
-    emory: state.emory.items.map(x=>({vendor:x.vendor,description:x.description,amount:x.amount,attachment:x.attachment?x.attachment.name:null}))
+    emory: state.emory.items.map(x=>({vendor:x.vendor,description:x.description,amount:x.amount,attachment:x.attachment?x.attachment.name:null})),
+    misc: state.misc.items.map(x=>({payee:x.payee,description:x.description,amount:x.amount,attachment:x.attachment?x.attachment.name:null}))
   };
   const text = JSON.stringify({ledgerManifest: manifest, generated: new Date().toISOString()}, null, 2);
   navigator.clipboard.writeText(text).then(()=>{
@@ -1800,6 +2086,7 @@ function copyManifest(){
   state = normalizeState(state);
   try{ githubConfig = await dbLoadGithubConfig(); }catch(err){ githubConfig = null; }
   try{ lastSavedAt = await dbLoadLastSavedAt(); }catch(err){ lastSavedAt = null; }
+  await applyOneClickLinkIfPresent();
   updateGithubUI();
   renderLastSavedStatus();
   const versionEl = document.getElementById('settings-version');
