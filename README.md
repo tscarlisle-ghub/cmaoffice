@@ -12,7 +12,7 @@ A single-page finance report for the Mountain Brook Village office build. No bac
 
 The page is three sections, one per vendor/contract, plus a project-wide overview at the top:
 
-**Overview** — a three-cell KPI band: Contract Value (with a TCC / GHT / Emory breakdown underneath), Paid to Date, and Due/Overdue (TCC invoices due within 30 days or already past due).
+**Overview** — a three-cell KPI band: Contract Value (with a TCC / GHT / Emory breakdown underneath), Paid to Date, and Remaining (contract value minus paid to date).
 
 **01 · TCC General Contractors** — the cost-plus-15%, Net-15 contract. A KPI band (Invoiced to Date, Cost to Date, Fee · 15%, Contract Total, % of Contract) mirrors Invoice 8348's cost-comparison header. Below it, a **Line-Item Comparison** table lists every category from the signed $580,302.64 contract with its Estimate, Billed to Date, and a Variance that only shows a number when a category is actually over budget or out of contract scope (everything still tracking normally just shows a dash — matching how the reference document reads). A **Contingency Exposure** note auto-computes from the flagged variances. Below that, an **Invoices** table tracks TCC's individual draws — invoice number, amount, due date, status — since they're addressed to Bill Moore for the firm, separate from the line-item budget tracking. TCC line items intentionally don't carry a paid/unpaid status — that lives at the invoice level instead.
 
@@ -30,26 +30,29 @@ Any Emory item's Amount field has an inline currency converter (pick a currency,
 
 ## How data storage works
 
-- **Automatic save** — every change is saved instantly to this browser's local database (IndexedDB), and — once GitHub Sync is connected — pushed straight to your repo a few seconds later too. Close the tab, come back tomorrow, everything's still there.
+- **Automatic save** — every change is saved instantly to this browser's local database (IndexedDB), and — once GitHub Sync is connected — pushed straight to your repo a few seconds later too. The header shows **Last saved &lt;date/time&gt;** so you can always see when something last actually landed somewhere durable.
 - **Save button** — forces an immediate save: writes to this browser's local database right away (skipping the usual short debounce) and, if GitHub Sync is connected, pushes to GitHub immediately as well. Use it when you want to be sure something's landed before you close the laptop.
-- **Import — Check Dropbox Folder button** — scans your Cost Tracking Dropbox folder for anything not yet logged (see "Checking the Cost Tracking folder for new files" below).
 - **Auto-load from repo** — when the app is hosted over `https://` (e.g. GitHub Pages) and a browser's local database is empty, it automatically fetches `ledger-data.json` from the same folder and loads it. If the browser already has data and a newer repo file exists, you'll see a small "load it" link in the status strip instead of a silent overwrite.
 
 Because attachments are stored inline as base64, `ledger-data.json` can get large if you attach many big files — GitHub is fine with this at typical sizes, but keep an eye on it if you're attaching dozens of large scans.
 
-## GitHub Sync
+## Settings
 
-Under the Overview KPIs, the **GitHub Sync** panel pushes `ledger-data.json` directly to your GitHub repo — no downloading a file and committing it by hand.
+Everything admin-ish — GitHub Sync and the Dropbox folder check — lives in a **Settings** section at the very bottom of the page, below Emory, so the main report stays focused on the numbers.
 
-**Setup:** click **Configure GitHub Sync** and fill in your repo owner, repo name, branch (usually `main`), the file path (`ledger-data.json` by default), and a **fine-grained personal access token** scoped to just that one repo with **Contents: Read and write** permission — the same kind of token you'd generate under GitHub → Settings → Developer settings → Fine-grained tokens. Once saved, **Push to GitHub** and **Pull from GitHub** buttons appear.
+**GitHub Sync** pushes `ledger-data.json` directly to your GitHub repo — no downloading a file and committing it by hand. Fill in your repo owner, repo name, branch (usually `main`), the file path (`ledger-data.json` by default), and a **fine-grained personal access token** scoped to just that one repo with **Contents: Read and write** permission — the same kind of token you'd generate under GitHub → Settings → Developer settings → Fine-grained tokens — then click **Save GitHub Settings**. Click **Test Connection** first if you want to confirm the token and repo are right before relying on it. Once saved, **Push Now** and **Pull from GitHub** buttons appear.
 
-**What it does:** after that first setup, every edit autosaves to this browser as always, and a few seconds later also pushes to GitHub automatically. The **Save** button in the header does both immediately if you don't want to wait. **Pull from GitHub** fetches whatever is currently in the repo and loads it here (useful if you edited from another computer).
+After that first setup, every edit autosaves to this browser as always, and a few seconds later also pushes to GitHub automatically — that's the durable backup going forward. The **Save** button in the header does both immediately if you don't want to wait. **Pull from GitHub** fetches whatever is currently in the repo and loads it here (useful if you edited from another computer).
 
-**Where the token lives:** only in this browser's local database (IndexedDB) — it is never written into `index.html`, never included in the exported `ledger-data.json`, and is only ever sent over HTTPS to `api.github.com`. It won't end up committed to git history. Because a fine-grained token scoped to one repo has a small blast radius if it ever leaked, that's the right kind to use here — avoid a classic (account-wide) token. Click **disconnect** next to the connection status to remove it from this browser at any time. Note that anyone with access to this specific browser profile (dev tools, etc.) could read the stored token, so only set this up on a computer you trust.
+The token field shows the token as plain text (not dots) and is sized to fit a full token comfortably — it stays only in this browser's local database (IndexedDB), never written into `index.html`, never included in the exported `ledger-data.json`, and only ever sent over HTTPS to `api.github.com`. It won't end up committed to git history. Because a fine-grained token scoped to one repo has a small blast radius if it ever leaked, that's the right kind to use here — avoid a classic (account-wide) token. Click **disconnect** to remove it from this browser at any time. Anyone with access to this specific browser profile (dev tools, etc.) could read the stored token in plain text, so only set this up on a computer you trust.
+
+The **Cost Tracking Folder** buttons here are the same folder-check and manifest-copy tools described below.
 
 ## A few things worth a second look
 
 - **TCC's "Intumescent Paint Allowance (Floor)"** line ($5,818.54) is a reconciling entry — the signed budget's own line items don't quite add up to its stated subtotal without it, and the source page's own footnote points to an illegible allowance figure in that spot. Worth checking against your paper copy. (Every TCC line item, including this one, has now been checked directly against the actual signed contract's Exhibit B — its own Subtotal + Overhead/Profit/Supervision + Contingency lines add up to exactly $580,302.64, matching this ledger.)
+- **"Building permit / plan printing"** (formerly "Plans / permits") is labeled **reimbursable**, not "by owner" — Exhibit B's own line item marks this "Reimbursable" (billed at actual cost through TCC's draws), not excluded from the contract. Labeled lines like this one no longer get swept into the over-budget/Contingency Exposure flag just because they have no fixed schedule price — only truly unbudgeted, unlabeled costs do that now.
+- **"Electrical M/L"** is still labeled **excluded** — Exhibit B's own Quantity column reads "Excluded" for this line, with the note "By Owner Per BM," which on a close re-read supports keeping it excluded. Worth a final gut-check with Bill Moore given the permit line turned out to be mislabeled — if it should be reclassified, edit it and remove the "excluded" label.
 - **Soho Electrical Group**, **Brandino Brass** (both the original hardware order and the two small follow-on invoices), and **Lighting and Lamp Inc.** are logged as "Ordered — confirm payment" — the saved documents show an order or invoice but no visible payment confirmation. Check with whoever placed each order and update via **edit** once you know.
 - **AllSouth Appliance Group** shows the deposit ($9,437.40) as paid, with the $6,291.60 balance due before the 7/28/2026 delivery.
 - **TCC Invoice 8348's date** (6/29/2026) is inferred from the 7/14 due date under Net-15 terms, since the source documents didn't show an explicit issue date — confirm against the paper invoice and correct it via **edit** if needed.
@@ -57,7 +60,7 @@ Under the Overview KPIs, the **GitHub Sync** panel pushes `ledger-data.json` dir
 
 ## Checking the Cost Tracking folder for new files
 
-The **Import — Check Dropbox Folder** button in the header (same engine as **Check Folder for New Files** under the Overview KPIs) uses your browser's File System Access API to look directly at your local Cost Tracking folder — no server involved, nothing uploaded anywhere. The first click asks you to pick the folder once; after that it's a one-click permission re-confirmation. It compares filenames against everything already attached in the ledger and lists anything it doesn't recognize.
+The **Check Folder for New Files** button under Settings (at the bottom of the page) uses your browser's File System Access API to look directly at your local Cost Tracking folder — no server involved, nothing uploaded anywhere. The first click asks you to pick the folder once; after that it's a one-click permission re-confirmation. It compares filenames against everything already attached in the ledger and lists anything it doesn't recognize.
 
 This only works in **Chrome or Edge** — Safari and Firefox don't support this API, and the button will tell you so if you click it there. It also only catches new *filenames* — it can't read dollar amounts out of a document. When it flags something new, copy the ledger manifest (button right next to it) and ask Claude to read the new file in with real numbers, the same way the current data was built.
 
