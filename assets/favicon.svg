@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <rect width="64" height="64" fill="#FBF6EE"/>
+  <rect x="2" y="2" width="60" height="60" fill="none" stroke="#A2512D" stroke-width="2"/>
+  <text x="32" y="42" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-weight="700" font-size="30" letter-spacing="1" fill="#A2512D">OF</text>
+</svg>

@@ -28,6 +28,14 @@ Dollar fields in the edit form show a thousands separator as you type (type `116
 
 Any Emory item's Amount field has an inline currency converter (pick a currency, enter the original amount, **Convert → USD**) for foreign-currency purchases like the Soho Electrical Group order (GBP).
 
+## Importing a document
+
+Click **+ Import** at the top of the page (next to Save) whenever you have a new PDF or photo — an invoice, a change order, a receipt, whatever. Pick which vendor it belongs to (TCC, GHT, or Emory), attach the file, add an optional note, and it drops into a **Pending Imports** panel right below the Overview KPIs.
+
+From there, bring it to Claude — in this chat, or your next Cowork session — and say something like "check pending imports." Claude reads the file (it's saved as a base64 attachment on the queue entry, so it travels with `ledger-data.json` through GitHub Sync same as everything else), figures out where it belongs — an existing line item, an existing invoice, or something brand new — and writes a proposal back onto that entry. The **Copy Prompt for Claude** button on each queued item copies a ready-made request to your clipboard if you'd rather paste it in than type it out.
+
+Once Claude's proposed something, the card in the queue shows exactly what would change — old value, new value, side by side — with **Approve & Apply** and **Reject** buttons. Nothing touches your actual numbers until you click Approve. The source file gets attached to whichever line item or invoice it updated, so the paper trail stays with the number. Reject sends it back to pending if Claude should take another pass; delete removes it from the queue entirely.
+
 ## How data storage works
 
 - **Automatic save** — every change is saved instantly to this browser's local database (IndexedDB), and — once GitHub Sync is connected — pushed straight to your repo a few seconds later too. The header shows **Last saved &lt;date/time&gt;** so you can always see when something last actually landed somewhere durable.
