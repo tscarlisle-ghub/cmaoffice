@@ -24,6 +24,8 @@ The page is three sections, one per vendor/contract, plus a project-wide overvie
 
 Numbers in the tables are plain text, not input boxes — the report reads clean, the way the reference document does. To change something, click **edit** at the end of any row; a small form opens for just that item (Estimate, Billed to Date, Status, attachment, etc.) and **Save** updates the table. Use **+ Add Line Item** / **+ Add Invoice** / **+ Add Item** under each table to log something new. Attachments accept PDF, JPG, or PNG.
 
+Dollar fields in the edit form show a thousands separator as you type (type `11610` and it becomes `11,610`) — cents are still accepted if you have them, they just don't show up in the report tables, which always round up to the nearest whole dollar for a cleaner read.
+
 Any Emory item's Amount field has an inline currency converter (pick a currency, enter the original amount, **Convert → USD**) for foreign-currency purchases like the Soho Electrical Group order (GBP).
 
 ## How data storage works
