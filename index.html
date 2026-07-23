@@ -104,6 +104,13 @@ label.btn-secondary{display:inline-block}
 .rtable td.num{text-align:right;font-family:var(--sans-cond);font-variant-numeric:tabular-nums;white-space:nowrap}
 .rtable td.cat{font-family:var(--sans-cond);font-weight:700;font-size:14px;letter-spacing:.02em;color:var(--ink);max-width:250px}
 .rtable td.status{font-family:var(--serif);font-style:italic;font-size:15px;color:var(--ink-soft);max-width:380px;white-space:normal}
+.rtable td.note{font-family:var(--serif);font-style:italic;font-size:14px;color:var(--ink-mute);max-width:260px;white-space:normal}
+.qty-note{display:block;font-family:var(--titling);font-style:normal;font-weight:400;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-mute);margin-top:3px}
+.rtable tbody tr.section-row{border-bottom:1px solid var(--ink)}
+.rtable tbody tr.section-row:hover{background:none}
+.rtable tbody tr.section-row td{padding:22px 10px 6px 0;border-bottom:1px solid var(--hairline-ink)}
+.rtable tbody tr.section-row td.section-cell{font-family:var(--display);font-weight:700;font-size:12px;letter-spacing:.09em;text-transform:uppercase;color:var(--rust)}
+.rtable tbody tr.section-row:first-child td{padding-top:0}
 .est-label{font-style:italic;color:var(--ink-mute);font-family:var(--serif);font-size:14.5px}
 .var-val{font-family:var(--sans-comp);font-weight:400;font-size:16.5px}
 .var-val.over{color:var(--rust)}
@@ -233,25 +240,7 @@ label.btn-secondary{display:inline-block}
       <div class="plate-note" id="tcc-plate-note">Cost-plus 15% &middot; Net 15</div>
     </div>
     <div>
-      <div class="kpi kpi-5" style="margin-top:0">
-        <div class="kpi-cell">
-          <div class="kpi-of">Invoiced to Date</div>
-          <div class="kpi-val tab rust" id="tcc-invtotal">$0</div>
-          <div class="kpi-label">Outstanding</div>
-          <div class="kpi-note" id="tcc-invtotal-note">across all draws</div>
-        </div>
-        <div class="kpi-cell">
-          <div class="kpi-of">Cost to Date</div>
-          <div class="kpi-val tab" id="tcc-costtodate">$0</div>
-          <div class="kpi-label">Ex-Fee</div>
-          <div class="kpi-note">per backup P&amp;L</div>
-        </div>
-        <div class="kpi-cell">
-          <div class="kpi-of">Fee &middot; 15%</div>
-          <div class="kpi-val tab" id="tcc-fee">$0</div>
-          <div class="kpi-label">Billed</div>
-          <div class="kpi-note">of cost to date</div>
-        </div>
+      <div class="kpi kpi-3" style="margin-top:0">
         <div class="kpi-cell">
           <div class="kpi-of">Contract Total</div>
           <div class="kpi-val tab" id="tcc-contracttotal">$0</div>
@@ -259,14 +248,20 @@ label.btn-secondary{display:inline-block}
           <div class="kpi-note" id="tcc-contractdate">—</div>
         </div>
         <div class="kpi-cell">
-          <div class="kpi-of">Of Contract</div>
-          <div class="kpi-val tab rust" id="tcc-pct">0%</div>
-          <div class="kpi-label">Drawn</div>
-          <div class="kpi-note">to date</div>
+          <div class="kpi-of">Invoiced to Date</div>
+          <div class="kpi-val tab rust" id="tcc-invtotal">$0</div>
+          <div class="kpi-label" id="tcc-pct">0% Drawn</div>
+          <div class="kpi-note">across all draws</div>
+        </div>
+        <div class="kpi-cell">
+          <div class="kpi-of">Remaining</div>
+          <div class="kpi-val tab" id="tcc-remaining">$0</div>
+          <div class="kpi-label">Left to Invoice</div>
+          <div class="kpi-note">of contract total</div>
         </div>
       </div>
 
-      <div class="section-h" style="margin-top:32px"><span class="rust">Line-Item Comparison</span>Estimate per signed contract &middot; billed-to-date per invoice backup.</div>
+      <div class="section-h" style="margin-top:32px"><span class="rust">Line-Item Comparison</span>Every category from Exhibit B (Carlisle Moore Schematic Estimate 3.7.26), grouped into the contract's own sections &middot; 2,690 SF framed / heated &amp; cooled &middot; 8-month estimated schedule.</div>
 
       <table class="rtable">
         <thead><tr>
@@ -274,6 +269,7 @@ label.btn-secondary{display:inline-block}
           <th class="num">Estimate</th>
           <th class="num">Billed to Date</th>
           <th class="num">Variance</th>
+          <th>Contract Notes</th>
           <th>Status</th>
           <th></th>
         </tr></thead>
@@ -281,6 +277,7 @@ label.btn-secondary{display:inline-block}
       </table>
 
       <div class="narrative" id="tcc-contingency"></div>
+      <div class="src-note" style="margin-top:10px">Contract-wide notes (Exhibit B): assumes no work in below-grade/basement spaces &middot; excludes rebuilding electrical services and wire to panels &mdash; TCC's own guess would be $30,000 plus fee &middot; excludes all fire alarm/sprinkler work.</div>
 
       <div class="add-row"><button class="btn btn-secondary btn-sm" onclick="openLineItemModal()">+ Add Line Item</button></div>
 
@@ -478,7 +475,7 @@ label.btn-secondary{display:inline-block}
 /* ============================= CONFIG ============================= */
 // Bump this string on every delivered rebuild so it's obvious at a glance, in the
 // browser, whether you're looking at the file you think you're looking at.
-const APP_VERSION = 'Build 10 · Permit Reclassified & Variance Fix · 7.23.2026';
+const APP_VERSION = 'Build 12 · TCC Line Items Rebuilt from Exhibit B · 7.23.2026';
 const CURRENCIES = ['EUR','GBP','CAD','MXN','JPY','CNY','AUD','CHF','Other'];
 const DB_NAME='cma_finance_db_v2', DB_VERSION=1, STORE='ledger';
 const ATTACH_ACCEPT = 'application/pdf,image/jpeg,image/jpg,image/png';
@@ -1114,6 +1111,11 @@ function openLineItemModal(id){
   document.getElementById('modal-title').textContent = id ? 'Edit Line Item' : 'Add TCC Line Item';
   document.getElementById('modal-body').innerHTML = `
     <div class="mfield"><label>Category</label><input type="text" id="m-category" value="${esc(item?item.category:'')}" placeholder="e.g. Framing labor"></div>
+    <div class="mfield"><label>Section</label>
+      <select id="m-section">
+        ${TCC_SECTIONS.map(s=>`<option value="${esc(s)}" ${item&&item.section===s?'selected':(!item&&s==='General Conditions'?'selected':'')}>${esc(s)}</option>`).join('')}
+      </select>
+    </div>
     <div class="mrow">
       <div class="mfield"><label>Estimate (USD)</label><input type="text" inputmode="decimal" oninput="formatMoneyLive(this)" id="m-estimate" value="${item&&item.estimate!=null?moneyVal(item.estimate):''}" placeholder="0"></div>
       <div class="mfield"><label>Or Label (if no $ estimate)</label>
@@ -1125,7 +1127,12 @@ function openLineItemModal(id){
         </select>
       </div>
     </div>
+    <div class="mrow">
+      <div class="mfield"><label>Qty <span style="font-weight:400;text-transform:none;letter-spacing:0">(only for per-unit allowances)</span></label><input type="text" id="m-qty" value="${esc(item&&item.qty?item.qty:'')}" placeholder="e.g. 50"></div>
+      <div class="mfield"><label>Unit</label><input type="text" id="m-unit" value="${esc(item&&item.unit?item.unit:'')}" placeholder="e.g. EA, SF"></div>
+    </div>
     <div class="mfield"><label>Billed to Date (USD)</label><input type="text" inputmode="decimal" oninput="formatMoneyLive(this)" id="m-billed" value="${moneyVal(item?item.billedToDate:0)}" placeholder="0"></div>
+    <div class="mfield"><label>Contract Note <span style="font-weight:400;text-transform:none;letter-spacing:0">(verbatim from Exhibit B's Notes column)</span></label><textarea id="m-contractnote" placeholder="e.g. By Owner Per BM">${esc(item?item.contractNote:'')}</textarea></div>
     <div class="mfield"><label>Status Note</label><textarea id="m-status" placeholder="e.g. 38% over — presumably complete">${esc(item?item.status:'')}</textarea></div>
     <div class="mfield"><label>Fee Line? <span style="font-weight:400;text-transform:none;letter-spacing:0">(this line's Billed to Date drives the Fee · 15% dashboard figure)</span></label>
       <select id="m-isfee"><option value="no" ${!item||!item.isFee?'selected':''}>No</option><option value="yes" ${item&&item.isFee?'selected':''}>Yes</option></select>
@@ -1263,12 +1270,16 @@ async function saveModal(){
     const estVal = document.getElementById('m-estimate').value;
     const rec = {
       id: id || uuid(),
+      section: document.getElementById('m-section').value,
       category: document.getElementById('m-category').value.trim() || 'Untitled',
+      qty: document.getElementById('m-qty').value.trim() || null,
+      unit: document.getElementById('m-unit').value.trim() || null,
       estimate: estLabel ? null : (estVal===''?null:num(estVal)),
       estimateLabel: estLabel,
       billedToDate: num(document.getElementById('m-billed').value),
       isFee: document.getElementById('m-isfee').value==='yes',
       status: document.getElementById('m-status').value,
+      contractNote: document.getElementById('m-contractnote').value,
       notes: '',
       attachment: id ? (findTccLi(id).attachment) : null
     };
@@ -1340,38 +1351,51 @@ function tccFee(){
 function tccInvoicedTotal(){
   return tccCostToDate() + tccFee();
 }
+const TCC_SECTIONS = ['General Conditions','Sitework/Demo','Foundation','Masonry','Framing','Trim Carpentry','Exterior','Roofing/Flashing','Doors and Windows','Paint/Insulation/Sheetrock','Flooring and Tile','Cabinets/Tops','Appliances','Specialties','Electrical','Plumbing','Mechanical','Summary'];
 function renderTccLineItems(){
   const body = document.getElementById('tcc-li-body');
   const rows = state.tcc.lineItems;
   if(!rows.length){
-    body.innerHTML = `<tr><td colspan="6"><div class="empty-state"><span>No TCC line items yet.</span></div></td></tr>`;
+    body.innerHTML = `<tr><td colspan="7"><div class="empty-state"><span>No TCC line items yet.</span></div></td></tr>`;
   } else {
-    body.innerHTML = rows.map(item=>{
-      const est = item.estimate;
-      const billed = num(item.billedToDate);
-      // Lines carrying a label (by owner / excluded / reimbursable) don't have a fixed
-      // estimate by design — billing against them isn't a "surprise," so they show a
-      // dash instead of being swept into the over-budget flag and contingency total.
-      const variance = est!=null ? billed - est : ((billed>0 && !item.estimateLabel) ? billed : null);
-      let varHTML = `<span class="var-dash">—</span>`;
-      let flagged = false;
-      if(variance!==null && (variance>0.005 || (est==null && billed>0 && !item.estimateLabel))){
-        flagged = true;
-        const pct = (est && est>0) ? (variance/est*100) : null;
-        varHTML = `<span class="var-val over tab">+${fmtUSD(variance)}</span>` + (pct!==null?` <span class="var-dash" style="font-size:11px">(${pct.toFixed(0)}%)</span>`:'');
-      } else if(variance!==null && variance<-0.005 && est){
-        varHTML = `<span class="var-dash">—</span>`;
-      }
-      const estCell = item.estimateLabel ? `<span class="est-label">${esc(item.estimateLabel)}</span>` : fmtUSD(est||0);
-      const attHTML = item.attachment ? `<span class="att-link" onclick='viewAttachmentObj(${JSON.stringify(item.attachment).replace(/'/g,"&#39;")})'>View</span>` : '';
-      return `<tr class="${flagged?'flagged':''}">
-        <td class="cat">${esc(item.category)}${item.isFee?' <span class="est-label">(fee)</span>':''}</td>
-        <td class="num">${estCell}</td>
-        <td class="num tab">${fmtUSD(billed)}</td>
-        <td class="num">${varHTML}</td>
-        <td class="status">${esc(item.status)}</td>
-        <td class="actions-cell">${attHTML}<span class="edit-link" onclick="openLineItemModal('${item.id}')">edit</span><span class="del-link" onclick="deleteTccLi('${item.id}')">delete</span></td>
-      </tr>`;
+    const bySection = {};
+    rows.forEach(item=>{
+      const sec = item.section || 'Other';
+      (bySection[sec] = bySection[sec]||[]).push(item);
+    });
+    const orderedSections = TCC_SECTIONS.filter(s=>bySection[s]).concat(Object.keys(bySection).filter(s=>!TCC_SECTIONS.includes(s)));
+    body.innerHTML = orderedSections.map(sec=>{
+      const sectionRow = `<tr class="section-row"><td class="section-cell" colspan="7">${esc(sec)}</td></tr>`;
+      const itemRows = bySection[sec].map(item=>{
+        const est = item.estimate;
+        const billed = num(item.billedToDate);
+        // Lines carrying a label (by owner / excluded / reimbursable) don't have a fixed
+        // estimate by design — billing against them isn't a "surprise," so they show a
+        // dash instead of being swept into the over-budget flag and contingency total.
+        const variance = est!=null ? billed - est : ((billed>0 && !item.estimateLabel) ? billed : null);
+        let varHTML = `<span class="var-dash">—</span>`;
+        let flagged = false;
+        if(variance!==null && (variance>0.005 || (est==null && billed>0 && !item.estimateLabel))){
+          flagged = true;
+          const pct = (est && est>0) ? (variance/est*100) : null;
+          varHTML = `<span class="var-val over tab">+${fmtUSD(variance)}</span>` + (pct!==null?` <span class="var-dash" style="font-size:11px">(${pct.toFixed(0)}%)</span>`:'');
+        } else if(variance!==null && variance<-0.005 && est){
+          varHTML = `<span class="var-dash">—</span>`;
+        }
+        const estCell = item.estimateLabel ? `<span class="est-label">${esc(item.estimateLabel)}</span>` : fmtUSD(est||0);
+        const qtyNote = (item.qty && item.unit) ? `<span class="qty-note">${esc(item.qty)} ${esc(item.unit)}</span>` : '';
+        const attHTML = item.attachment ? `<span class="att-link" onclick='viewAttachmentObj(${JSON.stringify(item.attachment).replace(/'/g,"&#39;")})'>View</span>` : '';
+        return `<tr class="${flagged?'flagged':''}">
+          <td class="cat">${esc(item.category)}${item.isFee?' <span class="est-label">(fee)</span>':''}${qtyNote}</td>
+          <td class="num">${estCell}</td>
+          <td class="num tab">${fmtUSD(billed)}</td>
+          <td class="num">${varHTML}</td>
+          <td class="note">${item.contractNote?esc(item.contractNote):'<span class="var-dash">—</span>'}</td>
+          <td class="status">${esc(item.status)}</td>
+          <td class="actions-cell">${attHTML}<span class="edit-link" onclick="openLineItemModal('${item.id}')">edit</span><span class="del-link" onclick="deleteTccLi('${item.id}')">delete</span></td>
+        </tr>`;
+      }).join('');
+      return sectionRow + itemRows;
     }).join('');
   }
   // totals row
@@ -1386,7 +1410,7 @@ function renderTccLineItems(){
     <td class="num total-val">${fmtUSD(estTotal)}</td>
     <td class="num total-val">${fmtUSD(billedTotal)}</td>
     <td class="num total-val rust">+${fmtUSD(flaggedVarTotal)}</td>
-    <td></td><td></td>
+    <td></td><td></td><td></td>
   </tr>`;
 
   // contingency narrative
@@ -1449,12 +1473,12 @@ function renderTcc(){
   const fee = tccFee();
   const invoiced = costToDate + fee;
   const contractTotal = state.tcc.contractTotal || state.tcc.lineItems.reduce((s,x)=>s+(x.estimate||0),0);
-  document.getElementById('tcc-invtotal').textContent = fmtUSD(invoiced);
-  document.getElementById('tcc-costtodate').textContent = fmtUSD(costToDate);
-  document.getElementById('tcc-fee').textContent = fmtUSD(fee);
+  const remaining = Math.max(contractTotal-invoiced, 0);
   document.getElementById('tcc-contracttotal').textContent = fmtUSD(contractTotal);
   document.getElementById('tcc-contractdate').textContent = state.tcc.contractDate ? ('signed '+fmtDate(state.tcc.contractDate)) : '—';
-  document.getElementById('tcc-pct').textContent = contractTotal ? (invoiced/contractTotal*100).toFixed(1)+'%' : '0%';
+  document.getElementById('tcc-invtotal').textContent = fmtUSD(invoiced);
+  document.getElementById('tcc-pct').textContent = (contractTotal ? (invoiced/contractTotal*100).toFixed(1) : '0') + '% Drawn';
+  document.getElementById('tcc-remaining').textContent = fmtUSD(remaining);
   document.getElementById('tcc-plate-note').textContent = state.tcc.terms || '';
 }
 
@@ -1578,7 +1602,7 @@ function renderAll(){
 /* ============================= DROPBOX MANIFEST ============================= */
 function copyManifest(){
   const manifest = {
-    tcc: state.tcc.lineItems.map(x=>({category:x.category,estimate:x.estimate,billedToDate:x.billedToDate,attachment:x.attachment?x.attachment.name:null})),
+    tcc: state.tcc.lineItems.map(x=>({section:x.section,category:x.category,estimate:x.estimate,estimateLabel:x.estimateLabel,billedToDate:x.billedToDate,attachment:x.attachment?x.attachment.name:null})),
     tccInvoices: state.tcc.invoices.map(x=>({number:x.number,amount:x.amount,attachment:x.attachment?x.attachment.name:null})),
     ght: state.ght.items.map(x=>({name:x.name,estimate:x.estimate,billedToDate:x.billedToDate,attachment:x.attachment?x.attachment.name:null})),
     emory: state.emory.items.map(x=>({vendor:x.vendor,description:x.description,amount:x.amount,attachment:x.attachment?x.attachment.name:null}))
