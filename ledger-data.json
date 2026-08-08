@@ -1,6 +1,6 @@
 {
   "_meta": {
-    "exported": "2026-08-08T14:20:38.542Z",
+    "exported": "2026-08-08T14:22:30.460Z",
     "project": "Mountain Brook Village Office — 2401½ Canterbury Road",
     "schema": 2,
     "note": "Commit this file as ledger-data.json alongside index.html in the GitHub repo. A browser with an empty local database will auto-load it on first visit."
@@ -474,7 +474,7 @@
         "description": "Summerville Stripe wallcovering, Umber — 170 yds (Order SCHU0531917S)",
         "amount": 3914.54,
         "amountOrig": null,
-        "paidAmount": 0,
+        "paidAmount": 3914.54,
         "status": "Paid — awaiting invoice",
         "date": "2026-06-16",
         "notes": "Charged to William Moore's card ending 1395. TCC/CMA has not yet received a formal invoice for this purchase.",
@@ -492,7 +492,7 @@
         "description": "Elkins double sconces (2) + candelabra bulbs (4) — project \"Carlisle Moore Sconces\"",
         "amount": 1165.72,
         "amountOrig": null,
-        "paidAmount": 0,
+        "paidAmount": 1165.72,
         "status": "Paid — awaiting invoice",
         "date": "2026-06-16",
         "notes": "Charged to MC ending 2731. Awaiting formal invoice.",
@@ -515,7 +515,7 @@
           "rate": 1.3369,
           "fetchedAt": "2026-07-22T00:00:00.000Z"
         },
-        "paidAmount": 0,
+        "paidAmount": 859.53,
         "status": "Ordered — confirm payment",
         "date": "2026-02-07",
         "notes": "Order acknowledgement only — bank transfer details shown but no payment confirmation visible. Confirm with Emory whether this has been paid.",
@@ -533,7 +533,7 @@
         "description": "PO 200808",
         "amount": 6090.1,
         "amountOrig": null,
-        "paidAmount": 0,
+        "paidAmount": 6090.1,
         "status": "Paid & invoiced",
         "date": "2026-07-01",
         "notes": "Invoice #001761, paid in full by Visa ending 1365 on 7.1.2026.",
@@ -551,7 +551,7 @@
         "description": "Palma dining table top + base (2), Atlantic demilune — Invoice IN-38088",
         "amount": 12867.65,
         "amountOrig": null,
-        "paidAmount": 0,
+        "paidAmount": 12867.65,
         "status": "Paid & invoiced",
         "date": "",
         "notes": "Resolved — this is Vitoch Interiors Invoice IN-38088, dated 5.29.2026, PAID in full, balance $0.00. (The earlier partial screenshot left the vendor and payment status unclear; the full invoice clears that up.)",
