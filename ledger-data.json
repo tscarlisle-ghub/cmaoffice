@@ -1,6 +1,6 @@
 {
   "_meta": {
-    "exported": "2026-08-10T13:54:18.574Z",
+    "exported": "2026-08-10T14:16:36.325Z",
     "project": "Mountain Brook Village Office — 2401½ Canterbury Road",
     "schema": 2,
     "note": "Commit this file as ledger-data.json alongside index.html in the GitHub repo. A browser with an empty local database will auto-load it on first visit."
@@ -435,7 +435,7 @@
         "id": "04613e69f615",
         "name": "Pre-Wire",
         "estimate": 7940.62,
-        "billedToDate": 0,
+        "billedToDate": 7940,
         "status": "not yet invoiced",
         "notes": "Current Rev 0 proposal #32509, 6.4.2026 (parts 7,113.39 + tax 827.23) — supersedes the earlier 7,374.57 figure. Not yet signed/countersigned; payment schedule would be 70% down / 20% on delivery / 10% final.",
         "attachment": {
