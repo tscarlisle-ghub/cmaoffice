@@ -1,6 +1,6 @@
 {
   "_meta": {
-    "exported": "2026-08-10T13:17:18.850Z",
+    "exported": "2026-08-10T13:54:18.574Z",
     "project": "Mountain Brook Village Office — 2401½ Canterbury Road",
     "schema": 2,
     "note": "Commit this file as ledger-data.json alongside index.html in the GitHub repo. A browser with an empty local database will auto-load it on first visit."
@@ -659,7 +659,7 @@
         "description": "",
         "amount": 20507.41,
         "amountOrig": null,
-        "paidAmount": 0,
+        "paidAmount": 20507.41,
         "status": "Ordered — confirm payment",
         "date": "2026-08-08",
         "notes": "",
