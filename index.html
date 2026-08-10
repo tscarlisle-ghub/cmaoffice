@@ -231,7 +231,7 @@ label.btn-secondary{display:inline-block}
 
   <div class="kpi kpi-3">
     <div class="kpi-cell">
-      <div class="kpi-of">Contract Value</div>
+      <div class="kpi-of">Estimate</div>
       <div class="kpi-val tab" id="ov-contract">$0</div>
       <div class="kpi-label">All Vendors</div>
       <div class="kpi-breakdown">
@@ -241,7 +241,7 @@ label.btn-secondary{display:inline-block}
       </div>
     </div>
     <div class="kpi-cell">
-      <div class="kpi-of">Paid to Date</div>
+      <div class="kpi-of">Paid</div>
       <div class="kpi-val tab forest" id="ov-paid">$0</div>
       <div class="kpi-label">Disbursed</div>
       <div class="kpi-note">across all three</div>
@@ -368,6 +368,7 @@ label.btn-secondary{display:inline-block}
           <th class="num">Estimate</th>
           <th class="num">Billed to Date</th>
           <th class="num">Variance</th>
+          <th style="text-align:center">Paid</th>
           <th>Status</th>
           <th>Attachment</th>
           <th></th>
@@ -389,7 +390,7 @@ label.btn-secondary{display:inline-block}
       <div class="plate-note">Design fee, FF&amp;E, and everything outside TCC and GHT.</div>
     </div>
     <div>
-      <div class="kpi kpi-3" style="margin-top:0">
+      <div class="kpi kpi-2" style="margin-top:0">
         <div class="kpi-cell">
           <div class="kpi-of">Design / FF&amp;E Estimate</div>
           <div class="kpi-val tab" id="em-est">$0</div>
@@ -401,12 +402,6 @@ label.btn-secondary{display:inline-block}
           <div class="kpi-val tab forest" id="em-paid">$0</div>
           <div class="kpi-label">Disbursed</div>
           <div class="kpi-note">confirmed payments</div>
-        </div>
-        <div class="kpi-cell">
-          <div class="kpi-of">Awaiting Invoice <span class="info" title="Paid but TCC/CMA has not yet received a formal invoice for it">ⓘ</span></div>
-          <div class="kpi-val tab rust" id="em-uninvoiced">$0</div>
-          <div class="kpi-label">Paid, No Invoice</div>
-          <div class="kpi-note">flag when it arrives</div>
         </div>
       </div>
 
@@ -1301,6 +1296,15 @@ function toggleTccInvoicePaid(id){
   renderAll();
 }
 function deleteGht(id){ if(!confirm('Delete this item?')) return; state.ght.items = state.ght.items.filter(x=>x.id!==id); scheduleAutosave(); renderAll(); }
+function toggleGhtPaid(id){
+  const item = findGht(id);
+  if(!item) return;
+  const amt = num(item.estimate);
+  const full = amt>0 && num(item.paidAmount) >= amt-0.005;
+  item.paidAmount = full ? 0 : amt;
+  scheduleAutosave();
+  renderAll();
+}
 function deleteEmory(id){ if(!confirm('Delete this item?')) return; state.emory.items = state.emory.items.filter(x=>x.id!==id); scheduleAutosave(); renderAll(); }
 
 /* ============================= PENDING IMPORTS ============================= */
@@ -1525,6 +1529,7 @@ function openGhtModal(id){
       <div class="mfield"><label>Estimate (USD)</label><input type="text" inputmode="decimal" oninput="formatMoneyLive(this)" id="m-estimate" value="${item?moneyVal(item.estimate):''}" placeholder="0"></div>
       <div class="mfield"><label>Billed to Date (USD)</label><input type="text" inputmode="decimal" oninput="formatMoneyLive(this)" id="m-billed" value="${moneyVal(item?item.billedToDate:0)}" placeholder="0"></div>
     </div>
+    <div class="mfield"><label>Paid Amount (USD)</label><input type="text" inputmode="decimal" oninput="formatMoneyLive(this)" id="m-paidamount" value="${moneyVal(item?item.paidAmount:0)}" placeholder="0"></div>
     <div class="mfield"><label>Status</label><input type="text" id="m-status" value="${esc(item?item.status:'not yet invoiced')}"></div>
     <div class="mfield"><label>Notes</label><textarea id="m-notes">${esc(item?item.notes:'')}</textarea></div>
     <div class="mfield"><label>Attachment</label>${attachmentFieldHTML(item)}</div>
@@ -1700,6 +1705,7 @@ async function saveModal(){
       name: document.getElementById('m-name').value.trim() || 'Untitled',
       estimate: num(document.getElementById('m-estimate').value),
       billedToDate: num(document.getElementById('m-billed').value),
+      paidAmount: num(document.getElementById('m-paidamount').value),
       status: document.getElementById('m-status').value,
       notes: document.getElementById('m-notes').value,
       attachment: id ? (findGht(id).attachment) : null
@@ -1907,18 +1913,27 @@ function renderGht(){
   const body = document.getElementById('ght-body');
   const rows = state.ght.items;
   if(!rows.length){
-    body.innerHTML = `<tr><td colspan="7"><div class="empty-state"><span>No GHT items yet.</span></div></td></tr>`;
+    body.innerHTML = `<tr><td colspan="8"><div class="empty-state"><span>No GHT items yet.</span></div></td></tr>`;
   } else {
     body.innerHTML = rows.map(item=>{
       const variance = num(item.billedToDate) - num(item.estimate);
       const flagged = variance > 0.005;
       const varHTML = flagged ? `<span class="var-val over tab">+${fmtUSD(variance)}</span>` : `<span class="var-dash">—</span>`;
       const attHTML = item.attachment ? `<span class="att-link" onclick='viewAttachmentObj(${JSON.stringify(item.attachment).replace(/'/g,"&#39;")})'>View</span>` : '—';
+      const estAmt = num(item.estimate), paidAmt = num(item.paidAmount);
+      const full = estAmt>0 && paidAmt>=estAmt-0.005;
+      const partial = paidAmt>0.005 && !full;
+      const boxClass = full ? 'checked' : (partial ? 'partial' : '');
+      const paidCell = `<span class="paid-check" onclick="toggleGhtPaid('${item.id}')" title="${full?'Paid in full — click to mark unpaid':(partial?'Partially paid — click to mark paid in full':'Not paid — click to mark paid in full')}">
+          <span class="paid-box ${boxClass}"></span>
+          <span class="paid-amt">${paidAmt>0?fmtUSD(paidAmt):''}</span>
+        </span>`;
       return `<tr class="${flagged?'flagged':''}">
         <td class="cat">${esc(item.name)}</td>
         <td class="num tab">${fmtUSD(item.estimate)}</td>
         <td class="num tab">${fmtUSD(item.billedToDate)}</td>
         <td class="num">${varHTML}</td>
+        <td style="text-align:center">${paidCell}</td>
         <td class="status">${esc(item.status)}${item.notes?`<br><span style="font-size:11.5px">${esc(item.notes)}</span>`:''}</td>
         <td class="att-cell">${attHTML}</td>
         <td class="actions-cell"><span class="edit-link" onclick="openGhtModal('${item.id}')">edit</span><span class="del-link" onclick="deleteGht('${item.id}')">delete</span></td>
@@ -1927,12 +1942,14 @@ function renderGht(){
   }
   const est = state.ght.items.reduce((s,x)=>s+num(x.estimate),0);
   const billed = state.ght.items.reduce((s,x)=>s+num(x.billedToDate),0);
+  const paidTotal = state.ght.items.reduce((s,x)=>s+num(x.paidAmount),0);
   const v = billed-est;
   body.innerHTML += `<tr class="total-row">
     <td class="total-label">Total</td>
     <td class="num total-val">${fmtUSD(est)}</td>
     <td class="num total-val">${fmtUSD(billed)}</td>
     <td class="num total-val ${v>0.005?'rust':(v<-0.005?'forest':'')}">${v>=0?'+':'−'}${fmtUSD(Math.abs(v))}</td>
+    <td class="num total-val forest" style="text-align:center">${fmtUSD(paidTotal)}</td>
     <td></td><td></td><td></td>
   </tr>`;
   document.getElementById('ght-est').textContent = fmtUSD(est);
@@ -1975,7 +1992,6 @@ function renderEmory(){
     }).join('');
   }
   const paid = state.emory.items.reduce((s,x)=>s+num(x.paidAmount),0);
-  const uninvoiced = state.emory.items.filter(x=>x.status==='Paid — awaiting invoice').reduce((s,x)=>s+num(x.paidAmount),0);
   body.innerHTML += `<tr class="total-row">
     <td class="total-label">Total</td>
     <td></td>
@@ -1985,7 +2001,6 @@ function renderEmory(){
   </tr>`;
   document.getElementById('em-est').textContent = fmtUSD(state.emory.contractEstimate);
   document.getElementById('em-paid').textContent = fmtUSD(paid);
-  document.getElementById('em-uninvoiced').textContent = fmtUSD(uninvoiced);
 }
 
 /* ============================= RENDER: MISCELLANEOUS ============================= */
@@ -2039,7 +2054,7 @@ function renderOverview(){
   const contract = tccContract + ghtEst + emoryEst;
 
   const tccPaid = state.tcc.invoices.reduce((s,x)=>s+num(x.paidAmount),0);
-  const ghtPaid = 0;
+  const ghtPaid = state.ght.items.reduce((s,x)=>s+num(x.paidAmount),0);
   const emoryPaid = state.emory.items.reduce((s,x)=>s+num(x.paidAmount),0);
   const paid = tccPaid + ghtPaid + emoryPaid;
 
