@@ -1,6 +1,6 @@
 {
   "_meta": {
-    "exported": "2026-09-09T15:28:04.984Z",
+    "exported": "2026-09-09T15:30:41.409Z",
     "project": "Mountain Brook Village Office — 2401½ Canterbury Road",
     "schema": 2,
     "note": "Commit this file as ledger-data.json alongside index.html in the GitHub repo. A browser with an empty local database will auto-load it on first visit."
@@ -158,13 +158,17 @@
       {
         "id": "49e336b65f11",
         "category": "Electrical M/L",
-        "estimate": null,
-        "estimateLabel": "excluded",
+        "estimate": 75000,
+        "estimateLabel": null,
         "billedToDate": 2025.24,
         "isFee": false,
         "status": "excluded category — confirm scope",
         "notes": "",
-        "attachment": null
+        "attachment": null,
+        "section": "General Conditions",
+        "qty": null,
+        "unit": null,
+        "contractNote": ""
       },
       {
         "id": "362b0cc8b939",
@@ -344,14 +348,18 @@
       },
       {
         "id": "cadb7cd175ce",
-        "category": "Can light allowance",
+        "category": "Electrical M/L",
         "estimate": 75000,
         "estimateLabel": null,
         "billedToDate": 0,
         "isFee": false,
         "status": "not yet drawn",
         "notes": "",
-        "attachment": null
+        "attachment": null,
+        "section": "General Conditions",
+        "qty": null,
+        "unit": null,
+        "contractNote": ""
       },
       {
         "id": "ae94da14ab1a",
