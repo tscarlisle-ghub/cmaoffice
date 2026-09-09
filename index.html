@@ -71,6 +71,7 @@ label.btn-secondary{display:inline-block}
 .kpi-4{grid-template-columns:repeat(4,1fr)}
 .kpi-3{grid-template-columns:repeat(3,1fr)}
 .kpi-2{grid-template-columns:repeat(2,1fr)}
+.kpi-1{grid-template-columns:minmax(240px,340px)}
 @media (max-width:900px){.kpi-5,.kpi-4{grid-template-columns:repeat(2,1fr)}.kpi-cell:nth-child(odd){border-left:none}}
 
 /* ═══ PANEL ═══ */
@@ -237,20 +238,19 @@ label.btn-secondary{display:inline-block}
       <div class="kpi-breakdown">
         <span>TCC<b class="tab" id="ov-contract-tcc">$0</b></span>
         <span>GHT<b class="tab" id="ov-contract-ght">$0</b></span>
-        <span>Emory<b class="tab" id="ov-contract-emory">$0</b></span>
       </div>
     </div>
     <div class="kpi-cell">
       <div class="kpi-of">Paid</div>
       <div class="kpi-val tab forest" id="ov-paid">$0</div>
       <div class="kpi-label">Disbursed</div>
-      <div class="kpi-note">across all three</div>
+      <div class="kpi-note">TCC + GHT</div>
     </div>
     <div class="kpi-cell">
       <div class="kpi-of">Remaining <span class="info" title="Contract value minus paid to date">ⓘ</span></div>
       <div class="kpi-val tab rust" id="ov-remaining">$0</div>
       <div class="kpi-label">Left to Pay</div>
-      <div class="kpi-note">across all three</div>
+      <div class="kpi-note">TCC + GHT</div>
     </div>
   </div>
 
@@ -390,13 +390,7 @@ label.btn-secondary{display:inline-block}
       <div class="plate-note">Design fee, FF&amp;E, and everything outside TCC and GHT.</div>
     </div>
     <div>
-      <div class="kpi kpi-2" style="margin-top:0">
-        <div class="kpi-cell">
-          <div class="kpi-of">Design / FF&amp;E Estimate</div>
-          <div class="kpi-val tab" id="em-est">$0</div>
-          <div class="kpi-label">Allowance</div>
-          <div class="kpi-note">per agreement</div>
-        </div>
+      <div class="kpi kpi-1" style="margin-top:0">
         <div class="kpi-cell">
           <div class="kpi-of">Paid to Date</div>
           <div class="kpi-val tab forest" id="em-paid">$0</div>
@@ -1999,7 +1993,6 @@ function renderEmory(){
     <td class="num total-val forest" style="text-align:center">${fmtUSD(paid)}</td>
     <td></td><td></td><td></td>
   </tr>`;
-  document.getElementById('em-est').textContent = fmtUSD(state.emory.contractEstimate);
   document.getElementById('em-paid').textContent = fmtUSD(paid);
 }
 
@@ -2048,22 +2041,23 @@ function renderMisc(){
 
 /* ============================= RENDER: OVERVIEW ============================= */
 function renderOverview(){
+  // Emory has no fixed contract estimate (it's an itemized catch-all, same as
+  // Miscellaneous Expenses) so it's intentionally excluded from Contract
+  // Value / Paid / Remaining here, same as Misc already was. Its own Paid to
+  // Date lives in its own section KPI band instead.
   const tccContract = state.tcc.contractTotal || state.tcc.lineItems.reduce((s,x)=>s+(x.estimate||0),0);
   const ghtEst = state.ght.items.reduce((s,x)=>s+num(x.estimate),0);
-  const emoryEst = state.emory.contractEstimate;
-  const contract = tccContract + ghtEst + emoryEst;
+  const contract = tccContract + ghtEst;
 
   const tccPaid = state.tcc.invoices.reduce((s,x)=>s+num(x.paidAmount),0);
   const ghtPaid = state.ght.items.reduce((s,x)=>s+num(x.paidAmount),0);
-  const emoryPaid = state.emory.items.reduce((s,x)=>s+num(x.paidAmount),0);
-  const paid = tccPaid + ghtPaid + emoryPaid;
+  const paid = tccPaid + ghtPaid;
 
   const remaining = Math.max(contract-paid, 0);
 
   document.getElementById('ov-contract').textContent = fmtUSD(contract);
   document.getElementById('ov-contract-tcc').textContent = fmtUSD(tccContract);
   document.getElementById('ov-contract-ght').textContent = fmtUSD(ghtEst);
-  document.getElementById('ov-contract-emory').textContent = fmtUSD(emoryEst);
   document.getElementById('ov-paid').textContent = fmtUSD(paid);
   document.getElementById('ov-remaining').textContent = fmtUSD(remaining);
 }
