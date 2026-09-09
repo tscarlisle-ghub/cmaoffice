@@ -230,7 +230,7 @@ label.btn-secondary{display:inline-block}
     <span class="save-status" id="save-status"></span>
   </div>
 
-  <div class="kpi kpi-3">
+  <div class="kpi kpi-4">
     <div class="kpi-cell">
       <div class="kpi-of">Estimate</div>
       <div class="kpi-val tab" id="ov-contract">$0</div>
@@ -251,6 +251,16 @@ label.btn-secondary{display:inline-block}
       <div class="kpi-val tab rust" id="ov-remaining">$0</div>
       <div class="kpi-label">Left to Pay</div>
       <div class="kpi-note">TCC + GHT</div>
+    </div>
+    <div class="kpi-cell">
+      <div class="kpi-of">Total Cost <span class="info" title="All confirmed payments across every vendor, including Emory (which has no fixed contract estimate)">ⓘ</span></div>
+      <div class="kpi-val tab forest" id="ov-total-cost">$0</div>
+      <div class="kpi-label">Project to Date</div>
+      <div class="kpi-breakdown">
+        <span>TCC<b class="tab" id="ov-total-tcc">$0</b></span>
+        <span>GHT<b class="tab" id="ov-total-ght">$0</b></span>
+        <span>Emory<b class="tab" id="ov-total-emory">$0</b></span>
+      </div>
     </div>
   </div>
 
@@ -2044,7 +2054,8 @@ function renderOverview(){
   // Emory has no fixed contract estimate (it's an itemized catch-all, same as
   // Miscellaneous Expenses) so it's intentionally excluded from Contract
   // Value / Paid / Remaining here, same as Misc already was. Its own Paid to
-  // Date lives in its own section KPI band instead.
+  // Date lives in its own section KPI band, and also rolls into the Total
+  // Cost tile below (which is actual spend, not tied to any estimate).
   const tccContract = state.tcc.contractTotal || state.tcc.lineItems.reduce((s,x)=>s+(x.estimate||0),0);
   const ghtEst = state.ght.items.reduce((s,x)=>s+num(x.estimate),0);
   const contract = tccContract + ghtEst;
@@ -2055,11 +2066,18 @@ function renderOverview(){
 
   const remaining = Math.max(contract-paid, 0);
 
+  const emoryPaid = state.emory.items.reduce((s,x)=>s+num(x.paidAmount),0);
+  const totalCost = tccPaid + ghtPaid + emoryPaid;
+
   document.getElementById('ov-contract').textContent = fmtUSD(contract);
   document.getElementById('ov-contract-tcc').textContent = fmtUSD(tccContract);
   document.getElementById('ov-contract-ght').textContent = fmtUSD(ghtEst);
   document.getElementById('ov-paid').textContent = fmtUSD(paid);
   document.getElementById('ov-remaining').textContent = fmtUSD(remaining);
+  document.getElementById('ov-total-cost').textContent = fmtUSD(totalCost);
+  document.getElementById('ov-total-tcc').textContent = fmtUSD(tccPaid);
+  document.getElementById('ov-total-ght').textContent = fmtUSD(ghtPaid);
+  document.getElementById('ov-total-emory').textContent = fmtUSD(emoryPaid);
 }
 
 function renderAll(){
