@@ -1,6 +1,6 @@
 {
   "_meta": {
-    "exported": "2026-09-09T15:30:41.409Z",
+    "exported": "2026-09-14T13:33:02.434Z",
     "project": "Mountain Brook Village Office — 2401½ Canterbury Road",
     "schema": 2,
     "note": "Commit this file as ledger-data.json alongside index.html in the GitHub repo. A browser with an empty local database will auto-load it on first visit."
@@ -347,21 +347,6 @@
         "attachment": null
       },
       {
-        "id": "cadb7cd175ce",
-        "category": "Electrical M/L",
-        "estimate": 75000,
-        "estimateLabel": null,
-        "billedToDate": 0,
-        "isFee": false,
-        "status": "not yet drawn",
-        "notes": "",
-        "attachment": null,
-        "section": "General Conditions",
-        "qty": null,
-        "unit": null,
-        "contractNote": ""
-      },
-      {
         "id": "ae94da14ab1a",
         "category": "Plumbing M/L",
         "estimate": 15000,
@@ -423,6 +408,18 @@
         "addressedTo": "Bill Moore",
         "status": "Paid",
         "paidAmount": 123186.23,
+        "notes": "",
+        "attachment": null
+      },
+      {
+        "id": "3d7a9cb3-c27e-48cd-9d7d-7fd5b795f8fc",
+        "number": "",
+        "date": "2026-09-14",
+        "amount": 133280,
+        "dueDate": "",
+        "addressedTo": "Bill Moore",
+        "status": "Outstanding",
+        "paidAmount": 133280,
         "notes": "",
         "attachment": null
       }
