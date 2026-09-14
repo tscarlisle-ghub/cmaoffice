@@ -235,12 +235,13 @@ label.btn-secondary{display:inline-block}
 
   <div class="kpi kpi-4">
     <div class="kpi-cell">
-      <div class="kpi-of">Estimate</div>
+      <div class="kpi-of">Total Projected Cost <span class="info" title="TCC + GHT signed/proposed contract value, plus Emory's running total to date (it has no fixed contract, so its own logged spend is the best available projection)">ⓘ</span></div>
       <div class="kpi-val tab" id="ov-contract">$0</div>
       <div class="kpi-label">All Vendors</div>
       <div class="kpi-breakdown">
         <span>TCC<b class="tab" id="ov-contract-tcc">$0</b></span>
         <span>GHT<b class="tab" id="ov-contract-ght">$0</b></span>
+        <span>Emory<b class="tab" id="ov-contract-emory">$0</b></span>
       </div>
     </div>
     <div class="kpi-cell">
@@ -307,11 +308,11 @@ label.btn-secondary{display:inline-block}
       <div class="section-h" style="margin-top:32px"><span class="rust">Line-Item Comparison</span>Every category from Exhibit B (Carlisle Moore Schematic Estimate 3.7.26), grouped into the contract's own sections &middot; 2,690 SF framed / heated &amp; cooled &middot; 8-month estimated schedule. Billed to Date is reconciled against TCC's own job-cost detail as of each invoice (6/24, 8/3, 9/9) &mdash; the small note under each figure shows the change since the prior draw, so a line still climbing reads differently from one that's gone flat.</div>
 
       <table class="rtable">
-        <thead><tr>
+        <thead><tr id="tcc-li-thead">
           <th>Category</th>
           <th class="num">Estimate</th>
-          <th class="num">Billed to Date</th>
-          <th class="num">Variance</th>
+          <th class="num" id="tcc-li-th-billed">Billed to Date</th>
+          <th class="num">Variance to Date</th>
           <th>Contract Notes</th>
           <th>Status</th>
           <th></th>
@@ -531,7 +532,7 @@ label.btn-secondary{display:inline-block}
   </div>
 
   <div class="fn">
-    Variance = Billed to Date minus Estimate, shown only where it's notable (over budget or out of contract scope) &middot;
+    Variance to Date = Billed to Date minus Estimate (rust = over, forest = under) &middot; each invoice column is the amount of that category billed in that specific draw, from TCC's own cost-to-date backup, not a running total &middot;
     TCC line items track estimate-vs-actual, not paid status — payment tracking lives in the Invoices table below them &middot;
     Foreign-currency amounts convert to USD at the rate captured when entered, kept as a tooltip on the amount &middot;
     Attachments accept PDF, JPG, or PNG &middot; data autosaves to this browser's local database (IndexedDB) &middot; export/commit ledger-data.json alongside index.html so a new browser or device loads the same starting data from your repo
@@ -1823,11 +1824,44 @@ function tccInvoicedTotal(){
   return tccCostToDate() + tccFee();
 }
 const TCC_SECTIONS = ['General Conditions','Sitework/Demo','Foundation','Masonry','Framing','Trim Carpentry','Exterior','Roofing/Flashing','Doors and Windows','Paint/Insulation/Sheetrock','Flooring and Tile','Cabinets/Tops','Appliances','Specialties','Electrical','Plumbing','Mechanical','Summary'];
+/* Per-invoice draw columns: each TCC line item's `history` array holds one cumulative
+   billedToDate snapshot per invoice, reconciled to that invoice's own cost-to-date
+   backup and kept in the same chronological order as the invoices themselves (the
+   save flow appends a new snapshot every time billedToDate moves). Rather than only
+   showing the running total, the draw for a given invoice is that snapshot minus the
+   one before it — so the table breaks the cumulative figure back down into what each
+   individual draw actually billed for that category, and the three (or more) draw
+   columns always sum to Billed to Date. */
+function tccSortedInvoices(){
+  return [...state.tcc.invoices].sort((a,b)=>(a.date||'').localeCompare(b.date||''));
+}
+function tccDrawAmount(item, idx){
+  const h = item.history || [];
+  if(idx >= h.length) return null;
+  const cur = num(h[idx].billedToDate);
+  const prev = idx>0 ? num(h[idx-1].billedToDate) : 0;
+  return cur - prev;
+}
+function renderTccInvoiceHeaderCols(invoices){
+  const theadRow = document.getElementById('tcc-li-thead');
+  const billedTh = document.getElementById('tcc-li-th-billed');
+  if(!theadRow || !billedTh) return;
+  theadRow.querySelectorAll('.tcc-inv-col-th').forEach(el=>el.remove());
+  invoices.forEach(inv=>{
+    const th = document.createElement('th');
+    th.className = 'num tcc-inv-col-th';
+    th.innerHTML = `#${esc(inv.number||'—')}<br><span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:10px">${esc(fmtShortDate(inv.date))} draw</span>`;
+    billedTh.parentNode.insertBefore(th, billedTh);
+  });
+}
 function renderTccLineItems(){
   const body = document.getElementById('tcc-li-body');
   const rows = state.tcc.lineItems;
+  const invoices = tccSortedInvoices();
+  renderTccInvoiceHeaderCols(invoices);
+  const totalCols = 7 + invoices.length;
   if(!rows.length){
-    body.innerHTML = `<tr><td colspan="7"><div class="empty-state"><span>No TCC line items yet.</span></div></td></tr>`;
+    body.innerHTML = `<tr><td colspan="${totalCols}"><div class="empty-state"><span>No TCC line items yet.</span></div></td></tr>`;
   } else {
     const bySection = {};
     rows.forEach(item=>{
@@ -1836,14 +1870,16 @@ function renderTccLineItems(){
     });
     const orderedSections = TCC_SECTIONS.filter(s=>bySection[s]).concat(Object.keys(bySection).filter(s=>!TCC_SECTIONS.includes(s)));
     body.innerHTML = orderedSections.map(sec=>{
-      const sectionRow = `<tr class="section-row"><td class="section-cell" colspan="7">${esc(sec)}</td></tr>`;
+      const sectionRow = `<tr class="section-row"><td class="section-cell" colspan="${totalCols}">${esc(sec)}</td></tr>`;
       const itemRows = bySection[sec].map(item=>{
         const est = item.estimate;
         const billed = num(item.billedToDate);
         // Lines carrying a label (by owner / excluded / reimbursable) don't have a fixed
         // estimate by design — billing against them isn't a "surprise," so they show a
         // dash instead of being swept into the over-budget flag and contingency total.
-        const variance = est!=null ? billed - est : ((billed>0 && !item.estimateLabel) ? billed : null);
+        // referenceOnly lines (the Exhibit B header's $/SF figures) aren't dollar budgets
+        // at all, so they never get a variance and stay out of every Total row below.
+        const variance = item.referenceOnly ? null : (est!=null ? billed - est : ((billed>0 && !item.estimateLabel) ? billed : null));
         let varHTML = `<span class="var-dash">—</span>`;
         let flagged = false;
         if(variance!==null && (variance>0.005 || (est==null && billed>0 && !item.estimateLabel))){
@@ -1851,14 +1887,22 @@ function renderTccLineItems(){
           const pct = (est && est>0) ? (variance/est*100) : null;
           varHTML = `<span class="var-val over tab">+${fmtUSD(variance)}</span>` + (pct!==null?` <span class="var-dash" style="font-size:11px">(${pct.toFixed(0)}%)</span>`:'');
         } else if(variance!==null && variance<-0.005 && est){
-          varHTML = `<span class="var-dash">—</span>`;
+          const pct = (est>0) ? (Math.abs(variance)/est*100) : null;
+          varHTML = `<span class="var-val under tab">−${fmtUSD(Math.abs(variance))}</span>` + (pct!==null?` <span class="var-dash" style="font-size:11px">(${pct.toFixed(0)}%)</span>`:'');
         }
-        const estCell = item.estimateLabel ? `<span class="est-label">${esc(item.estimateLabel)}</span>` : fmtUSD(est||0);
+        const estCell = item.referenceOnly ? `<span class="est-label">${fmtUSD(est||0)}/SF (ref)</span>` : (item.estimateLabel ? `<span class="est-label">${esc(item.estimateLabel)}</span>` : fmtUSD(est||0));
         const qtyNote = (item.qty && item.unit) ? `<span class="qty-note">${esc(item.qty)} ${esc(item.unit)}</span>` : '';
         const attHTML = item.attachment ? `<span class="att-link" onclick='viewAttachmentObj(${JSON.stringify(item.attachment).replace(/'/g,"&#39;")})'>View</span>` : '';
+        const drawCells = invoices.map((inv,idx)=>{
+          const amt = tccDrawAmount(item, idx);
+          if(amt===null) return `<td class="num tab"><span class="var-dash">—</span></td>`;
+          if(Math.abs(amt)<0.005) return `<td class="num tab"><span class="var-dash">—</span></td>`;
+          return `<td class="num tab">${fmtUSD(amt)}</td>`;
+        }).join('');
         return `<tr class="${flagged?'flagged':''}">
           <td class="cat">${esc(item.category)}${item.isFee?' <span class="est-label">(fee)</span>':''}${qtyNote}</td>
           <td class="num">${estCell}</td>
+          ${drawCells}
           <td class="num tab">${fmtUSD(billed)}${tccTrendHTML(item)}</td>
           <td class="num">${varHTML}</td>
           <td class="note">${item.contractNote?esc(item.contractNote):'<span class="var-dash">—</span>'}</td>
@@ -1869,16 +1913,27 @@ function renderTccLineItems(){
       return sectionRow + itemRows;
     }).join('');
   }
-  // totals row
-  const estTotal = state.tcc.lineItems.reduce((s,x)=>s+(x.estimate||0),0);
+  // totals row — referenceOnly lines (the Exhibit B header's $/SF figures) are excluded:
+  // their "estimate" is a rate, not a dollar amount, and folding it in would inflate
+  // the Estimate total past the contract's own printed figure.
+  const estTotal = state.tcc.lineItems.reduce((s,x)=>s+(x.referenceOnly?0:(x.estimate||0)),0);
   const billedTotal = state.tcc.lineItems.reduce((s,x)=>s+num(x.billedToDate),0);
   const flaggedVarTotal = state.tcc.lineItems.reduce((s,x)=>{
+    if(x.referenceOnly) return s;
     const v = x.estimate!=null ? num(x.billedToDate)-x.estimate : ((num(x.billedToDate)>0 && !x.estimateLabel) ? num(x.billedToDate) : 0);
     return s + (v>0.005 ? v : 0);
   },0);
+  const drawTotalCells = invoices.map((inv,idx)=>{
+    const tot = state.tcc.lineItems.reduce((s,x)=>{
+      const a = tccDrawAmount(x, idx);
+      return s + (a===null?0:a);
+    },0);
+    return `<td class="num total-val">${fmtUSD(tot)}</td>`;
+  }).join('');
   body.innerHTML += `<tr class="total-row">
     <td class="total-label">Total</td>
     <td class="num total-val">${fmtUSD(estTotal)}</td>
+    ${drawTotalCells}
     <td class="num total-val">${fmtUSD(billedTotal)}</td>
     <td class="num total-val rust">+${fmtUSD(flaggedVarTotal)}</td>
     <td></td><td></td><td></td>
@@ -1940,10 +1995,10 @@ function renderTccInvoices(){
 function renderTcc(){
   renderTccLineItems();
   renderTccInvoices();
-  const costToDate = tccCostToDate();
-  const fee = tccFee();
-  const invoiced = costToDate + fee;
-  const contractTotal = state.tcc.contractTotal || state.tcc.lineItems.reduce((s,x)=>s+(x.estimate||0),0);
+  // Derived directly from the Invoices table's own records (not from line items) so this
+  // KPI can never drift from the Invoices table's Total row — they're now the same sum.
+  const invoiced = state.tcc.invoices.reduce((s,x)=>s+num(x.amount),0);
+  const contractTotal = state.tcc.contractTotal || state.tcc.lineItems.reduce((s,x)=>s+(x.referenceOnly?0:(x.estimate||0)),0);
   const remaining = Math.max(contractTotal-invoiced, 0);
   document.getElementById('tcc-contracttotal').textContent = fmtUSD(contractTotal);
   document.getElementById('tcc-contractdate').textContent = state.tcc.contractDate ? ('signed '+fmtDate(state.tcc.contractDate)) : '—';
@@ -2093,10 +2148,11 @@ function renderMisc(){
 /* ============================= RENDER: OVERVIEW ============================= */
 function renderOverview(){
   // Emory has no fixed contract estimate (it's an itemized catch-all, same as
-  // Miscellaneous Expenses) so it's intentionally excluded from Contract
-  // Value / Paid / Remaining here, same as Misc already was. Its own Paid to
-  // Date lives in its own section KPI band, and also rolls into the Total
-  // Cost tile below (which is actual spend, not tied to any estimate).
+  // Miscellaneous Expenses) so its running total stands in for a "projection"
+  // wherever one is needed. Paid / Remaining stay scoped to TCC + GHT — those
+  // are the two contracts with money actually still owed against them; Emory's
+  // logged-to-date is already paid, not money outstanding, so folding it into
+  // Paid/Remaining would inflate Remaining by Emory's own spend for no reason.
   const tccContract = state.tcc.contractTotal || state.tcc.lineItems.reduce((s,x)=>s+(x.estimate||0),0);
   const ghtEst = state.ght.items.reduce((s,x)=>s+num(x.estimate),0);
   const contract = tccContract + ghtEst;
@@ -2110,9 +2166,14 @@ function renderOverview(){
   const emoryPaid = state.emory.items.reduce((s,x)=>s+num(x.paidAmount),0);
   const totalCost = tccPaid + ghtPaid + emoryPaid;
 
-  document.getElementById('ov-contract').textContent = fmtUSD(contract);
+  // Total Projected Cost — TCC + GHT contract value plus Emory's running total,
+  // since Emory has no separate budget of its own to project against.
+  const totalProjected = contract + emoryPaid;
+
+  document.getElementById('ov-contract').textContent = fmtUSD(totalProjected);
   document.getElementById('ov-contract-tcc').textContent = fmtUSD(tccContract);
   document.getElementById('ov-contract-ght').textContent = fmtUSD(ghtEst);
+  document.getElementById('ov-contract-emory').textContent = fmtUSD(emoryPaid);
   document.getElementById('ov-paid').textContent = fmtUSD(paid);
   document.getElementById('ov-remaining').textContent = fmtUSD(remaining);
   document.getElementById('ov-total-cost').textContent = fmtUSD(totalCost);
