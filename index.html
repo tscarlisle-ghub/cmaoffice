@@ -306,14 +306,13 @@ label.btn-secondary{display:inline-block}
         </div>
       </div>
 
-      <div class="section-h" style="margin-top:32px"><span class="rust">Line-Item Comparison</span>Every category from Exhibit B (Carlisle Moore Schematic Estimate 3.7.26), grouped into the contract's own sections &middot; 2,690 SF framed / heated &amp; cooled &middot; 8-month estimated schedule. Billed to Date is reconciled against TCC's own job-cost detail as of each invoice (6/24, 8/3, 9/9) &mdash; the small note under each figure shows the change since the prior draw, so a line still climbing reads differently from one that's gone flat.</div>
+      <div class="section-h" style="margin-top:32px"><span class="rust">Line-Item Comparison</span>Every category from Exhibit B (Carlisle Moore Schematic Estimate 3.7.26), grouped into the contract's own sections &middot; 2,690 SF framed / heated &amp; cooled &middot; 8-month estimated schedule. One column per invoice shows that category's cost-to-date as reconciled against TCC's own job-cost backup for that draw &mdash; each new invoice adds its own column here automatically, and Variance to Date always reflects the most recent one.</div>
 
       <table class="rtable">
         <thead><tr id="tcc-li-thead">
           <th>Category</th>
           <th class="num">Estimate</th>
-          <th class="num" id="tcc-li-th-billed">Billed to Date</th>
-          <th class="num">Variance to Date</th>
+          <th class="num" id="tcc-li-th-variance">Variance to Date</th>
           <th>Contract Notes</th>
           <th>Status</th>
           <th></th>
@@ -533,7 +532,7 @@ label.btn-secondary{display:inline-block}
   </div>
 
   <div class="fn">
-    Variance to Date = Billed to Date minus Estimate (rust = over, forest = under) &middot; each invoice column is the amount of that category billed in that specific draw, from TCC's own cost-to-date backup, not a running total &middot;
+    Variance to Date = latest invoice column minus Estimate (rust = over, forest = under) &middot; each invoice column is that category's running cost-to-date as of that invoice's own backup, so the figures climb left to right &middot;
     TCC line items track estimate-vs-actual, not paid status — payment tracking lives in the Invoices table below them &middot;
     Foreign-currency amounts convert to USD at the rate captured when entered, kept as a tooltip on the amount &middot;
     Attachments accept PDF, JPG, or PNG &middot; data autosaves to this browser's local database (IndexedDB) &middot; export/commit ledger-data.json alongside index.html so a new browser or device loads the same starting data from your repo
@@ -621,22 +620,6 @@ function fmtShortDate(d){
   const dt = new Date(d+'T00:00:00');
   if(isNaN(dt)) return d;
   return dt.toLocaleDateString('en-US',{month:'numeric',day:'numeric'});
-}
-/* Cost-change-from-estimate tracking: each TCC line item can carry a `history`
-   array of {date, billedToDate} snapshots (one per cost-to-date backup Claude has
-   reconciled against an invoice). This renders the movement since the next-to-last
-   snapshot directly under the Billed to Date figure, so a line that's still climbing
-   reads differently from one that's gone flat (and is probably done). */
-function tccTrendHTML(item){
-  const h = item.history;
-  if(!h || h.length<2) return '';
-  const last = h[h.length-1], prev = h[h.length-2];
-  const delta = num(last.billedToDate) - num(prev.billedToDate);
-  if(Math.abs(delta) < 0.005){
-    return `<span class="trend-note flat">flat since ${esc(fmtShortDate(prev.date))}</span>`;
-  }
-  const sign = delta>0 ? '+' : '−';
-  return `<span class="trend-note rising">${sign}${fmtUSD(Math.abs(delta))} since ${esc(fmtShortDate(prev.date))}</span>`;
 }
 function todayISO(){ return new Date().toISOString().slice(0,10); }
 function esc(s){ return (s==null?'':String(s)).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
@@ -1825,34 +1808,35 @@ function tccInvoicedTotal(){
   return tccCostToDate() + tccFee();
 }
 const TCC_SECTIONS = ['General Conditions','Sitework/Demo','Foundation','Masonry','Framing','Trim Carpentry','Exterior','Roofing/Flashing','Doors and Windows','Paint/Insulation/Sheetrock','Flooring and Tile','Cabinets/Tops','Appliances','Specialties','Electrical','Plumbing','Mechanical','Summary'];
-/* Per-invoice draw columns: each TCC line item's `history` array holds one cumulative
+/* Per-invoice columns: each TCC line item's `history` array holds one cumulative
    billedToDate snapshot per invoice, reconciled to that invoice's own cost-to-date
    backup and kept in the same chronological order as the invoices themselves (the
-   save flow appends a new snapshot every time billedToDate moves). Rather than only
-   showing the running total, the draw for a given invoice is that snapshot minus the
-   one before it — so the table breaks the cumulative figure back down into what each
-   individual draw actually billed for that category, and the three (or more) draw
-   columns always sum to Billed to Date. */
+   save flow appends a new snapshot every time billedToDate moves). Each invoice
+   column shows that snapshot directly — the running cost-to-date as of that specific
+   invoice, the same figure printed on that invoice's own backup — so the numbers
+   climb left to right and the rightmost invoice column always equals the item's
+   current billedToDate. A new invoice automatically gets its own column here (see
+   tccSortedInvoices/renderTccInvoiceHeaderCols) the moment its history snapshot is
+   appended, with no separate "Billed to Date" column needed since the last invoice
+   column already is that figure. */
 function tccSortedInvoices(){
   return [...state.tcc.invoices].sort((a,b)=>(a.date||'').localeCompare(b.date||''));
 }
-function tccDrawAmount(item, idx){
+function tccCumulativeAt(item, idx){
   const h = item.history || [];
   if(idx >= h.length) return null;
-  const cur = num(h[idx].billedToDate);
-  const prev = idx>0 ? num(h[idx-1].billedToDate) : 0;
-  return cur - prev;
+  return num(h[idx].billedToDate);
 }
 function renderTccInvoiceHeaderCols(invoices){
   const theadRow = document.getElementById('tcc-li-thead');
-  const billedTh = document.getElementById('tcc-li-th-billed');
-  if(!theadRow || !billedTh) return;
+  const anchorTh = document.getElementById('tcc-li-th-variance');
+  if(!theadRow || !anchorTh) return;
   theadRow.querySelectorAll('.tcc-inv-col-th').forEach(el=>el.remove());
   invoices.forEach(inv=>{
     const th = document.createElement('th');
     th.className = 'num tcc-inv-col-th';
     th.innerHTML = `${esc(fmtShortDate(inv.date))}<br><span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:10px">#${esc(inv.number||'—')} draw</span>`;
-    billedTh.parentNode.insertBefore(th, billedTh);
+    anchorTh.parentNode.insertBefore(th, anchorTh);
   });
 }
 function renderTccLineItems(){
@@ -1860,7 +1844,7 @@ function renderTccLineItems(){
   const rows = state.tcc.lineItems;
   const invoices = tccSortedInvoices();
   renderTccInvoiceHeaderCols(invoices);
-  const totalCols = 7 + invoices.length;
+  const totalCols = 6 + invoices.length;
   if(!rows.length){
     body.innerHTML = `<tr><td colspan="${totalCols}"><div class="empty-state"><span>No TCC line items yet.</span></div></td></tr>`;
   } else {
@@ -1894,17 +1878,15 @@ function renderTccLineItems(){
         const estCell = item.referenceOnly ? `<span class="est-label">${fmtUSD(est||0)}/SF (ref)</span>` : (item.estimateLabel ? `<span class="est-label">${esc(item.estimateLabel)}</span>` : fmtUSD(est||0));
         const qtyNote = (item.qty && item.unit) ? `<span class="qty-note">${esc(item.qty)} ${esc(item.unit)}</span>` : '';
         const attHTML = item.attachment ? `<span class="att-link" onclick='viewAttachmentObj(${JSON.stringify(item.attachment).replace(/'/g,"&#39;")})'>View</span>` : '';
-        const drawCells = invoices.map((inv,idx)=>{
-          const amt = tccDrawAmount(item, idx);
-          if(amt===null) return `<td class="num tab"><span class="var-dash">—</span></td>`;
-          if(Math.abs(amt)<0.005) return `<td class="num tab"><span class="var-dash">—</span></td>`;
+        const invCells = invoices.map((inv,idx)=>{
+          const amt = tccCumulativeAt(item, idx);
+          if(amt===null || Math.abs(amt)<0.005) return `<td class="num tab"><span class="var-dash">—</span></td>`;
           return `<td class="num tab">${fmtUSD(amt)}</td>`;
         }).join('');
         return `<tr class="${flagged?'flagged':''}">
           <td class="cat">${esc(item.category)}${item.isFee?' <span class="est-label">(fee)</span>':''}${qtyNote}</td>
           <td class="num">${estCell}</td>
-          ${drawCells}
-          <td class="num tab">${fmtUSD(billed)}${tccTrendHTML(item)}</td>
+          ${invCells}
           <td class="num">${varHTML}</td>
           <td class="note">${item.contractNote?esc(item.contractNote):'<span class="var-dash">—</span>'}</td>
           <td class="status">${esc(item.status)}</td>
@@ -1918,15 +1900,14 @@ function renderTccLineItems(){
   // their "estimate" is a rate, not a dollar amount, and folding it in would inflate
   // the Estimate total past the contract's own printed figure.
   const estTotal = state.tcc.lineItems.reduce((s,x)=>s+(x.referenceOnly?0:(x.estimate||0)),0);
-  const billedTotal = state.tcc.lineItems.reduce((s,x)=>s+num(x.billedToDate),0);
   const flaggedVarTotal = state.tcc.lineItems.reduce((s,x)=>{
     if(x.referenceOnly) return s;
     const v = x.estimate!=null ? num(x.billedToDate)-x.estimate : ((num(x.billedToDate)>0 && !x.estimateLabel) ? num(x.billedToDate) : 0);
     return s + (v>0.005 ? v : 0);
   },0);
-  const drawTotalCells = invoices.map((inv,idx)=>{
+  const invTotalCells = invoices.map((inv,idx)=>{
     const tot = state.tcc.lineItems.reduce((s,x)=>{
-      const a = tccDrawAmount(x, idx);
+      const a = tccCumulativeAt(x, idx);
       return s + (a===null?0:a);
     },0);
     return `<td class="num total-val">${fmtUSD(tot)}</td>`;
@@ -1934,8 +1915,7 @@ function renderTccLineItems(){
   body.innerHTML += `<tr class="total-row">
     <td class="total-label">Total</td>
     <td class="num total-val">${fmtUSD(estTotal)}</td>
-    ${drawTotalCells}
-    <td class="num total-val">${fmtUSD(billedTotal)}</td>
+    ${invTotalCells}
     <td class="num total-val rust">+${fmtUSD(flaggedVarTotal)}</td>
     <td></td><td></td><td></td>
   </tr>`;
