@@ -229,6 +229,7 @@ label.btn-secondary{display:inline-block}
   <div class="save-strip">
     <button class="btn btn-save" onclick="manualSave()">Save</button>
     <button class="btn btn-primary" onclick="openImportModal()">+ Import</button>
+    <label class="btn btn-secondary btn-sm" style="cursor:pointer">Load Ledger File<input type="file" accept="application/json" style="display:none" onchange="importLedgerFile(this)"></label>
     <span class="spacer"></span>
     <span class="save-status" id="save-status"></span>
   </div>
@@ -1850,7 +1851,7 @@ function renderTccInvoiceHeaderCols(invoices){
   invoices.forEach(inv=>{
     const th = document.createElement('th');
     th.className = 'num tcc-inv-col-th';
-    th.innerHTML = `#${esc(inv.number||'—')}<br><span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:10px">${esc(fmtShortDate(inv.date))} draw</span>`;
+    th.innerHTML = `${esc(fmtShortDate(inv.date))}<br><span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:10px">#${esc(inv.number||'—')} draw</span>`;
     billedTh.parentNode.insertBefore(th, billedTh);
   });
 }
